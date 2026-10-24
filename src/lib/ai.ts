@@ -186,6 +186,7 @@ export async function buildProfileDraft(resumePdfBase64: string, answers: Onboar
             text: `Build my portfolio from the resume above.
 
 <my_answers>
+Name to show on my card: ${answers.displayName || "(use resume)"}
 Roles I'm looking for: ${answers.targetRoles || "(not given)"}
 What I'm building right now: ${answers.building || "(not given)"}
 Line I want recruiters to remember: ${answers.tagline || "(not given)"}

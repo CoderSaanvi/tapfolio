@@ -44,3 +44,13 @@ export async function saveProfile(profile: Profile): Promise<void> {
     else items[i] = profile;
   });
 }
+
+/** Applies `patch` to a built profile. Returns undefined if it doesn't exist (samples can't be edited). */
+export async function updateProfile(slug: string, patch: (p: Profile) => Profile): Promise<Profile | undefined> {
+  return store.mutate((items) => {
+    const i = items.findIndex((p) => p.slug === slug);
+    if (i === -1) return undefined;
+    items[i] = patch(items[i]);
+    return items[i];
+  });
+}

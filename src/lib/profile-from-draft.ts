@@ -68,15 +68,21 @@ export function profileFromDraft(d: ProfileDraft, a: OnboardingAnswers, files: {
     });
   projects.forEach((p, i) => (p.feature = i === 0));
 
+  // The name they typed wins over the resume's: first word is the first name, the rest the last.
+  const [shownFirst, ...shownRest] = clean(a.displayName).split(/\s+/).filter(Boolean);
+  const firstName = shownFirst ?? clean(d.firstName);
+  const lastName = shownFirst ? shownRest.join(" ") : clean(d.lastName);
+
   const linkedin = url(a.linkedin || d.contact.linkedin, "linkedin.com", "www.linkedin.com/in");
   const github = url(a.github || d.contact.github, "github.com", "github.com");
   const places: Place[] = github ? [{ name: "GitHub", sub: github.replace("https://", ""), href: github, icon: "code" }] : [];
 
   return {
     slug: files.slug,
-    firstName: clean(d.firstName),
-    lastName: clean(d.lastName),
-    fullName: clean(d.fullName) || `${clean(d.firstName)} ${clean(d.lastName)}`,
+    firstName,
+    lastName,
+    fullName: clean(d.fullName) || `${firstName} ${lastName}`,
+    pronouns: orUndefined(a.pronouns),
     location: clean(d.location),
     title: clean(d.title),
     headline: clean(d.headline),

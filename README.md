@@ -15,7 +15,9 @@ The recruiter page is built for phones: the contact card comes first, and the ca
 
 ## Onboarding: Claude builds your card
 
-The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.ts`) and fills in the whole card and portfolio in this format, usually in under a minute. The phone is remembered as the card's owner (a cookie), so it opens straight to the share screen after that. "Rebuild my card" at the bottom of the share screen starts over with a new resume.
+The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.ts`) and fills in the whole card and portfolio in this format, usually in under a minute. Onboarding also asks for the name to show on the card and pronouns (blank = the resume's name). After the build, an optional **Project demos** step lists the projects Claude found so you can attach demo videos, photos, or a demo link to each; it's also on the share screen for later. Recruiters see a **▶ Demo** tag and can play videos inline (the file server supports range requests, which iPhone Safari needs), and plays are recorded for the follow-up.
+
+The phone is remembered as the card's owner (a cookie), so it opens straight to the share screen after that. "Rebuild my card" at the bottom of the share screen starts over with a new resume.
 
 Built profiles live in `.data/profiles.json`, and uploaded photos and resumes in `.data/uploads/`. The hand-written example stays at `/c/kaushik`.
 

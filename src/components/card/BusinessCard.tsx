@@ -25,6 +25,7 @@ export function BusinessCard({ profile: p }: BusinessCardProps) {
         <div>
           <h1 className="font-sora text-[34px] font-semibold leading-[1.05] tracking-tight">
             {p.firstName} {p.lastName}
+            {p.pronouns && <span className="ml-2 align-middle font-mono text-xs font-normal tracking-normal text-ink-2">{p.pronouns}</span>}
           </h1>
           <p className="mt-1.5 text-sm text-ink-2">{p.headline}</p>
         </div>

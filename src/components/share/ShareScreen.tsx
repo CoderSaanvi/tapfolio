@@ -74,9 +74,15 @@ export function ShareScreen({ profile: p, justBuilt }: ShareScreenProps) {
       <EventField value={eventName} onChange={setEventName} />
       <ConversationRecorder slug={p.slug} eventName={eventName} onConversation={setConversationId} />
 
-      <Link href="/onboarding" className="mt-4 text-center text-xs text-ink-2 no-underline">
-        New resume? <span className="text-scarlet-bright">Rebuild my card</span>
-      </Link>
+      <div className="mt-4 flex flex-col gap-2">
+        <Link href="/onboarding/demos" className="flex items-center justify-between rounded-2xl border border-line bg-card px-4 py-3.5 text-sm text-ink no-underline">
+          <span><b className="font-medium">Project demos</b><span className="block text-xs text-ink-2">Add videos, photos, or links to your projects</span></span>
+          <span className="text-ink-2">›</span>
+        </Link>
+        <Link href="/onboarding" className="text-center text-xs text-ink-2 no-underline">
+          New resume? <span className="text-scarlet-bright">Rebuild my card</span>
+        </Link>
+      </div>
 
       <OwnerTabBar />
     </main>

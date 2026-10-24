@@ -11,6 +11,8 @@ const MAX_PDF = 8 * 1024 * 1024;
 const MAX_PHOTO = 8 * 1024 * 1024;
 
 const AnswersSchema = z.object({
+  displayName: z.string().max(80).default(""),
+  pronouns: z.string().max(30).default(""),
   email: z.string().max(200).default(""),
   phone: z.string().max(40).default(""),
   linkedin: z.string().max(200).default(""),

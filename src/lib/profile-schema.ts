@@ -56,6 +56,8 @@ export const ProfileDraftSchema = z.object({
 export type ProfileDraft = z.infer<typeof ProfileDraftSchema>;
 
 export interface OnboardingAnswers {
+  displayName: string;
+  pronouns: string;
   email: string;
   phone: string;
   linkedin: string;

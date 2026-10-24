@@ -10,7 +10,7 @@ import { QuestionsStep } from "./QuestionsStep";
 import { StepShell, primaryButton } from "./StepShell";
 import { UploadStep } from "./UploadStep";
 
-const EMPTY: OnboardingAnswers = { email: "", phone: "", linkedin: "", github: "", targetRoles: "", building: "", tagline: "" };
+const EMPTY: OnboardingAnswers = { displayName: "", pronouns: "", email: "", phone: "", linkedin: "", github: "", targetRoles: "", building: "", tagline: "" };
 
 export function OnboardingFlow() {
   const router = useRouter();
@@ -32,7 +32,7 @@ export function OnboardingFlow() {
       const res = await fetch("/api/onboarding", { method: "POST", body: form });
       const json = (await res.json()) as { success: boolean; data?: { slug: string }; error?: string };
       if (!json.success || !json.data) throw new Error(json.error ?? "Something went wrong building your card.");
-      router.replace("/?built=1");
+      router.replace("/onboarding/demos?new=1");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong building your card.");
@@ -45,7 +45,7 @@ export function OnboardingFlow() {
     return (
       <StepShell
         step={0}
-        total={3}
+        total={4}
         title="Your resume, as a card recruiters remember"
         sub="Upload your resume and a photo. Tapfolio builds your contact card and live portfolio, ready to share with a tap."
         footer={<button type="button" onClick={() => setStep("upload")} className={primaryButton}>Get started</button>}
@@ -66,7 +66,7 @@ export function OnboardingFlow() {
     return (
       <StepShell
         step={1}
-        total={3}
+        total={4}
         title="Add your photo and resume"
         onBack={() => setStep("welcome")}
         footer={<button type="button" disabled={!photo || !resume} onClick={() => setStep("questions")} className={primaryButton}>Continue</button>}
@@ -79,7 +79,7 @@ export function OnboardingFlow() {
   return (
     <StepShell
       step={2}
-      total={3}
+      total={4}
       title="A few quick questions"
       sub="All optional. Your answers shape how the portfolio is written."
       onBack={() => setStep("upload")}

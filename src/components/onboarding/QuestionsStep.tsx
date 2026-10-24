@@ -8,6 +8,8 @@ interface QuestionsStepProps {
 }
 
 const FIELDS: { key: keyof OnboardingAnswers; label: string; placeholder: string; type?: string; long?: boolean }[] = [
+  { key: "displayName", label: "Name to show on your card", placeholder: "e.g. Kaushik Burra (blank = name on your resume)" },
+  { key: "pronouns", label: "Pronouns", placeholder: "e.g. he/him (optional)" },
   { key: "targetRoles", label: "What roles are you going for?", placeholder: "e.g. Medical device R&D internships, AI product roles", long: true },
   { key: "building", label: "What are you building right now?", placeholder: "e.g. A computer-vision tool that checks dance timing", long: true },
   { key: "tagline", label: "One line you want recruiters to remember", placeholder: "e.g. Let's build better healthcare together." },

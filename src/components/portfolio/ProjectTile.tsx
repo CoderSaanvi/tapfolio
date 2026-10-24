@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { Tags } from "@/components/ui/Tags";
 import { TrackedSection } from "@/components/tracking/TrackedSection";
+import { ProjectMediaGallery } from "./ProjectMediaGallery";
 import type { Project } from "@/lib/types";
 
 interface ProjectTileProps {
@@ -39,6 +40,9 @@ export function ProjectTile({ project: p, index }: ProjectTileProps) {
             <Icon name={open ? "up" : "arrow"} className="h-4 w-4 text-ink-2" />
           </span>
           <span className="mt-auto pt-6">
+            {(p.media?.some((m) => m.kind === "video") || p.links?.some((l) => l.label === "Watch demo")) && (
+              <span className="mb-1.5 mr-2 inline-flex items-center gap-1 rounded-full bg-scarlet px-2 py-0.5 font-mono text-[10.5px] uppercase tracking-[.1em] text-white">▶ Demo</span>
+            )}
             {p.status && (
               <span className="mb-1.5 flex items-center gap-2 font-mono text-[10.5px] uppercase tracking-[.14em] text-emerald-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" /> {p.status}
@@ -52,6 +56,7 @@ export function ProjectTile({ project: p, index }: ProjectTileProps) {
 
         {open && (
           <div className="relative flex flex-col gap-3 px-5 pb-5 text-[14.5px] leading-relaxed text-ink/85">
+            <ProjectMediaGallery project={p} />
             {p.summary.map((s) => <p key={s.slice(0, 24)}>{s}</p>)}
             {p.metrics && (
               <div className="flex flex-wrap gap-6 py-1">

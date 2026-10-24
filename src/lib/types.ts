@@ -8,6 +8,12 @@ export interface LinkItem {
   href: string;
 }
 
+export interface ProjectMedia {
+  id: string;
+  kind: "video" | "image";
+  src: string;
+}
+
 export interface Project {
   id: string;
   label: string;
@@ -23,6 +29,8 @@ export interface Project {
   blurb?: string;
   feature?: boolean;
   image?: { src: string; alt: string; position?: string };
+  /** Demo videos and photos the owner uploaded for this project. */
+  media?: ProjectMedia[];
   org?: { name: string; accent?: string; place: string };
 }
 
@@ -56,6 +64,7 @@ export interface Profile {
   firstName: string;
   lastName: string;
   fullName: string;
+  pronouns?: string;
   location: string;
   title: string;
   headline: string;
