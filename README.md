@@ -51,10 +51,12 @@ The microphone only works on `localhost` or HTTPS. Over plain `http://<ip>:3800`
 
 Copy `.env.local.example` to `.env.local`.
 
-- `ANTHROPIC_API_KEY`: needed for Claude-drafted follow-ups.
-- `OWNER_PASSWORD`: puts `/` and `/activity` behind a password. Recruiter pages stay public.
+- `ANTHROPIC_API_KEY`: needed for building cards and drafting follow-ups.
+- `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`: store everything in Supabase. Without them the app uses `.data/` on this machine.
 - `GITHUB_TOKEN`: raises the GitHub rate limit for the "Building right now" feed.
 
-## Before deploying
+## Storage and accounts
 
-Views and conversations are stored in `.data/*.json` (`src/lib/json-store.ts`), which works locally but not on Vercel (read-only filesystem). Swap that store for Supabase before deploying.
+With Supabase configured, profiles, conversations, and card views live in Postgres (schema in `supabase/migrations/0001_tapfolio_init.sql`; every query goes through `src/lib/supabase.ts`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
+
+Each card has an owner: onboarding returns a secret token, kept in an httpOnly cookie on the web and sent as `Authorization: Bearer` by the mobile app. Owner-only routes (conversations, follow-ups, demos, Activity) check it; only its SHA-256 hash is stored.

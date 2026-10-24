@@ -14,9 +14,8 @@ export const dynamic = "force-dynamic";
 
 async function load(slug: string): Promise<{ conversations: Conversation[]; events: ViewEvent[]; error: boolean }> {
   try {
-    const [conversations, events] = await Promise.all([listConversations(), listEvents()]);
-    // Only this phone's card.
-    return { conversations: conversations.filter((c) => c.slug === slug), events: events.filter((e) => e.slug === slug), error: false };
+    const [conversations, events] = await Promise.all([listConversations(slug), listEvents(slug)]);
+    return { conversations, events, error: false };
   } catch {
     return { conversations: [], events: [], error: true };
   }

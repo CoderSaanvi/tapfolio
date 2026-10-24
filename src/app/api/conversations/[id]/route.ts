@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { updateConversation } from "@/lib/conversations-store";
+import { getOwnedConversation, updateConversation } from "@/lib/conversations-store";
 
 const PatchSchema = z.object({
   eventName: z.string().max(120).optional(),
@@ -32,9 +32,10 @@ interface RouteContext {
   params: { id: string };
 }
 
-/** Owner-only (middleware). Saves transcript/notes, ends the conversation, edits the draft, or soft-deletes. */
+/** Owner-only. Saves transcript/notes, ends the conversation, edits the draft, or soft-deletes. */
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   try {
+    if (!(await getOwnedConversation(params.id))) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
     const parsed = PatchSchema.safeParse(await req.json());
     if (!parsed.success) return NextResponse.json({ success: false, error: "Invalid update" }, { status: 400 });
     const { end, recruiter, followUp, delete: remove, ...fields } = parsed.data;

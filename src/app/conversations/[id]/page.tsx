@@ -3,7 +3,7 @@ import { OwnerTabBar } from "@/components/ui/OwnerTabBar";
 import { notFound } from "next/navigation";
 import { SessionCard } from "@/components/activity/SessionCard";
 import { ConversationEditor } from "@/components/conversation/ConversationEditor";
-import { getConversation } from "@/lib/conversations-store";
+import { getOwnedConversation } from "@/lib/conversations-store";
 import { listEvents } from "@/lib/events-store";
 import { eventsForConversation, summarizeSessions } from "@/lib/sessions";
 import { formatDuration } from "@/lib/time";
@@ -15,9 +15,10 @@ interface ConversationPageProps {
 }
 
 export default async function ConversationPage({ params }: ConversationPageProps) {
-  const convo = await getConversation(params.id).catch(() => undefined);
-  if (!convo) notFound();
-  const events = await listEvents().catch(() => []);
+  const owned = await getOwnedConversation(params.id).catch(() => undefined);
+  if (!owned) notFound();
+  const { convo } = owned;
+  const events = await listEvents(convo.slug).catch(() => []);
   const sessions = summarizeSessions(eventsForConversation(events, convo));
   const length = convo.endedAt ? formatDuration(new Date(convo.endedAt).getTime() - new Date(convo.startedAt).getTime()) : "In progress";
 

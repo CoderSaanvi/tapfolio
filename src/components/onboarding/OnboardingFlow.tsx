@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { resizeImage } from "@/lib/resize-image";
+import { uploadFile } from "@/lib/upload-client";
 import type { OnboardingAnswers } from "@/lib/profile-schema";
 import { BuildingStep } from "./BuildingStep";
 import { QuestionsStep } from "./QuestionsStep";
@@ -25,11 +26,12 @@ export function OnboardingFlow() {
     setStep("building");
     setError(null);
     try {
-      const form = new FormData();
-      form.append("photo", await resizeImage(photo));
-      form.append("resume", resume);
-      form.append("answers", JSON.stringify(answers));
-      const res = await fetch("/api/onboarding", { method: "POST", body: form });
+      const [photoUrl, resumeUrl] = await Promise.all([uploadFile(await resizeImage(photo)), uploadFile(resume)]);
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoUrl, resumeUrl, answers }),
+      });
       const json = (await res.json()) as { success: boolean; data?: { slug: string }; error?: string };
       if (!json.success || !json.data) throw new Error(json.error ?? "Something went wrong building your card.");
       router.replace("/onboarding/demos?new=1");
