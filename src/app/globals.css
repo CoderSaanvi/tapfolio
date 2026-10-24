@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+body {
+  @apply bg-white font-body text-[17px] leading-relaxed text-ink antialiased;
+}
+:focus-visible {
+  @apply rounded-md outline outline-2 outline-offset-[3px] outline-scarlet;
+}
+
+@layer components {
+  /* The gray/white OSU stripe under the scarlet band. */
+  .osu-stripe {
+    height: 5px;
+    background: repeating-linear-gradient(90deg, #a7b1b7 0 24px, #fff 24px 30px);
+  }
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[.1em] text-ink-2;
+  }
+}
