@@ -5,22 +5,29 @@
 html {
   scroll-behavior: smooth;
   -webkit-tap-highlight-color: transparent;
+  background: #0a0a0a;
+  color-scheme: dark;
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
 body {
-  @apply bg-white font-body text-[17px] leading-relaxed text-ink antialiased;
+  @apply min-h-dvh bg-night font-body text-[16px] leading-relaxed text-ink antialiased;
 }
 :focus-visible {
-  @apply rounded-md outline outline-2 outline-offset-[3px] outline-scarlet;
+  @apply rounded-md outline outline-2 outline-offset-[3px] outline-scarlet-bright;
+}
+/* Anchored sections land below the sticky nav. */
+[id] {
+  scroll-margin-top: calc(72px + env(safe-area-inset-top));
 }
 
 @layer components {
-  /* The gray/white OSU stripe under the scarlet band. */
+  /* The gray/white OSU stripe. */
   .osu-stripe {
-    height: 5px;
-    background: repeating-linear-gradient(90deg, #a7b1b7 0 24px, #fff 24px 30px);
+    height: 3px;
+    background: repeating-linear-gradient(90deg, #a7b1b7 0 24px, transparent 24px 30px);
+    opacity: 0.5;
   }
   .eyebrow {
     @apply font-mono text-xs uppercase tracking-[.1em] text-ink-2;

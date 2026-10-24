@@ -17,7 +17,7 @@ export function ConversationRow({ conversation: c, views }: ConversationRowProps
   return (
     <Link
       href={`/conversations/${c.id}`}
-      className="flex items-center gap-3 rounded-2xl border border-line bg-white p-4 font-sys text-ink no-underline hover:border-scarlet/50"
+      className="flex items-center gap-3 rounded-2xl border border-line bg-card p-4 font-sys text-ink no-underline hover:border-scarlet/50"
     >
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold">{who}</p>
@@ -27,7 +27,7 @@ export function ConversationRow({ conversation: c, views }: ConversationRowProps
       </div>
       <span
         className={`flex-none rounded-full px-2.5 py-1 text-xs font-semibold ${
-          urgent ? "bg-scarlet text-white" : f?.status === "sent" ? "bg-wash text-ink-2" : "bg-scarlet-tint text-scarlet-deep"
+          urgent ? "bg-scarlet text-white" : f?.status === "sent" ? "bg-wash text-ink-2" : "bg-scarlet-tint text-scarlet-bright"
         }`}
       >
         {chip}

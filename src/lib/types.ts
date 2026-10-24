@@ -19,6 +19,8 @@ export interface Project {
   links?: LinkItem[];
   note?: string;
   status?: string;
+  /** One short line for compact spots (Currently card, collapsed tiles). */
+  blurb?: string;
   feature?: boolean;
   image?: { src: string; alt: string; position?: string };
   org?: { name: string; accent?: string; place: string };
@@ -31,6 +33,9 @@ export interface ExperienceItem {
   context?: string;
   bullets: string[];
   badge?: string;
+  /** Image in public/ for the logo tile, else `mark` initials are shown. */
+  logo?: string;
+  mark?: string;
 }
 
 export interface Fact {
@@ -53,6 +58,7 @@ export interface Profile {
   fullName: string;
   location: string;
   title: string;
+  headline: string;
   focus: string;
   bio: string;
   tagline: string;

@@ -31,10 +31,10 @@ export function FollowUpPanel({ followUp: f, email, drafting, onDraft, onChange,
   const input = "rounded-lg border border-line px-3 py-2 text-[15px] text-ink outline-none focus:border-scarlet";
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-line border-t-4 border-t-scarlet bg-white p-5">
+    <section className="flex flex-col gap-3 rounded-2xl border border-line border-t-4 border-t-scarlet bg-card p-5">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="font-display text-2xl font-extrabold uppercase">Follow-up</h2>
-        {f && <span className="rounded-full bg-scarlet-tint px-2.5 py-1 text-xs font-semibold text-scarlet-deep">{dueLabel(f)}</span>}
+        <h2 className="font-display text-2xl font-semibold tracking-tight">Follow-up</h2>
+        {f && <span className="rounded-full bg-scarlet-tint px-2.5 py-1 text-xs font-semibold text-scarlet-bright">{dueLabel(f)}</span>}
       </div>
 
       {!f && <p className="text-sm text-ink-2">Claude reads the transcript, your notes, and what they looked at on your card, then drafts a tailored email to send in a couple of days.</p>}

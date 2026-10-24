@@ -72,23 +72,23 @@ export function ConversationRecorder({ slug, eventName, onConversation }: Conver
   if (!id) {
     return (
       <div className="flex flex-col gap-1.5">
-        <button type="button" onClick={begin} disabled={busy} className="flex items-center justify-center gap-2.5 rounded-2xl border-[1.5px] border-scarlet bg-white px-5 py-4 text-[15px] font-semibold text-scarlet disabled:opacity-60">
+        <button type="button" onClick={begin} disabled={busy} className="flex items-center justify-center gap-2.5 rounded-2xl border-[1.5px] border-scarlet bg-card px-5 py-4 text-[15px] font-semibold text-scarlet-bright disabled:opacity-60">
           <span className="h-3 w-3 rounded-full bg-scarlet" /> Start conversation
         </button>
         <p className="text-center text-xs text-ink-2">
           {speech.supported ? "Records a transcript so Claude can draft your follow-up. Ask before recording." : "Live transcript isn't supported in this browser. You can type notes instead."}
         </p>
-        {error && <p className="text-center text-xs text-scarlet">{error}</p>}
+        {error && <p className="text-center text-xs text-scarlet-bright">{error}</p>}
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-scarlet/40 bg-white p-4">
+    <div className="flex flex-col gap-3 rounded-2xl border border-scarlet/40 bg-card p-4">
       <div className="flex items-center gap-2.5 text-sm font-semibold">
         <span className={`h-2.5 w-2.5 rounded-full bg-scarlet ${speech.listening ? "animate-pulse" : "opacity-40"}`} />
         {speech.listening ? "Listening" : "Not recording"} · <span className="font-mono tabular-nums">{formatDuration(Math.max(0, now - startedAt))}</span>
-        <button type="button" onClick={end} disabled={busy} className="ml-auto rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-white disabled:opacity-60">
+        <button type="button" onClick={end} disabled={busy} className="ml-auto rounded-full bg-ink px-3.5 py-1.5 text-xs font-semibold text-night disabled:opacity-60">
           End &amp; review
         </button>
       </div>
@@ -102,7 +102,7 @@ export function ConversationRecorder({ slug, eventName, onConversation }: Conver
         )}
       </p>
       <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} placeholder="Quick notes: their name, team, what to follow up on…" className="rounded-xl border border-line px-3 py-2 text-sm outline-none focus:border-scarlet" />
-      {(speech.error || error) && <p className="text-xs text-scarlet">{speech.error ?? error}</p>}
+      {(speech.error || error) && <p className="text-xs text-scarlet-bright">{speech.error ?? error}</p>}
     </div>
   );
 }

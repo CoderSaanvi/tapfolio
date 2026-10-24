@@ -3,7 +3,7 @@ import { getProfile } from "@/data/profile";
 import { draftFollowUp } from "@/lib/ai";
 import { getConversation, updateConversation } from "@/lib/conversations-store";
 import { listEvents } from "@/lib/events-store";
-import { summarizeSessions } from "@/lib/sessions";
+import { eventsForConversation, summarizeSessions } from "@/lib/sessions";
 
 interface RouteContext {
   params: { id: string };
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest, { params }: RouteContext) {
     const profile = convo && getProfile(convo.slug);
     if (!convo || !profile) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
 
-    const events = (await listEvents()).filter((e) => e.conversationId === convo.id);
+    const events = eventsForConversation(await listEvents(), convo);
     const cardUrl = `${req.nextUrl.origin}/c/${profile.slug}`;
     const { followUp, recruiter } = await draftFollowUp({ profile, conversation: convo, sessions: summarizeSessions(events), cardUrl });
 

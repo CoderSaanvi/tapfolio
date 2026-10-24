@@ -1,4 +1,27 @@
-import type { ViewEvent } from "./types";
+import type { Conversation, ViewEvent } from "./types";
+
+const LINK_WINDOW_MS = 10 * 60 * 1000;
+
+/**
+ * Card views that belong to a conversation: those opened from its link, plus
+ * views from a plain link (e.g. the QR was scanned before "Start conversation")
+ * that began within 10 minutes of the conversation at the same event.
+ */
+export function eventsForConversation(events: ViewEvent[], c: Conversation): ViewEvent[] {
+  const start = new Date(c.startedAt).getTime() - LINK_WINDOW_MS;
+  const end = (c.endedAt ? new Date(c.endedAt).getTime() : Date.now()) + LINK_WINDOW_MS;
+  const nearby = new Set(
+    events
+      .filter((e) => e.type === "open" && !e.conversationId && e.slug === c.slug)
+      .filter((e) => (e.eventName ?? "") === c.eventName || !e.eventName || !c.eventName)
+      .filter((e) => {
+        const t = new Date(e.at).getTime();
+        return t >= start && t <= end;
+      })
+      .map((e) => e.sessionId),
+  );
+  return events.filter((e) => e.conversationId === c.id || (!e.conversationId && nearby.has(e.sessionId)));
+}
 
 export interface SectionTime {
   target: string;

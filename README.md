@@ -11,6 +11,12 @@ Tap-to-share contact card that opens a live portfolio, and logs what each recrui
 
 Nothing has to be installed on the recruiter's phone. AirDrop / Quick Share / the camera all open the card in their browser.
 
+The recruiter page is built for phones: the contact card comes first, and the card's "Explore" list links to every section (projects, experience, resume, education, skills). A floating "Contact card" button brings them back to it.
+
+## Install on your iPhone
+
+Open the app in Safari, tap **Share → Add to Home Screen**. It opens full-screen from its own icon, straight to the QR and **Tap to share**, with a bottom tab bar for Share and Activity.
+
 ## The follow-up flow
 
 1. Walk up to a recruiter, tap **Start conversation** (ask before recording). The phone transcribes live using the browser's built-in speech recognition.

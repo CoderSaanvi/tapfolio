@@ -36,7 +36,7 @@ export function EventField({ value, onChange }: EventFieldProps) {
         value={value}
         onChange={(e) => update(e.target.value)}
         placeholder="e.g. OSU Engineering Career Fair"
-        className="rounded-xl border border-line bg-white px-3.5 py-3 text-[15px] outline-none focus:border-scarlet"
+        className="rounded-xl border border-line bg-card px-3.5 py-3 text-[15px] outline-none focus:border-scarlet"
       />
     </label>
   );

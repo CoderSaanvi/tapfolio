@@ -9,8 +9,8 @@ interface TranscriptEditorProps {
 
 export function TranscriptEditor({ transcript, notes, onChange, onSave }: TranscriptEditorProps) {
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-5">
-      <h2 className="font-display text-2xl font-extrabold uppercase">The conversation</h2>
+    <section className="flex flex-col gap-3 rounded-2xl border border-line bg-card p-5">
+      <h2 className="font-display text-2xl font-semibold tracking-tight">The conversation</h2>
       <label className="flex flex-col gap-1 text-xs text-ink-2">
         Transcript (fix anything the mic misheard)
         <textarea

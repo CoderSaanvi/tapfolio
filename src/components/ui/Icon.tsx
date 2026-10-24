@@ -1,4 +1,6 @@
-export type IconName = "save" | "linkedin" | "share" | "phone" | "mail" | "pin" | "globe" | "code" | "arrow" | "tap" | "copy";
+export type IconName =
+  | "save" | "linkedin" | "share" | "phone" | "mail" | "pin" | "globe" | "code" | "arrow" | "tap" | "copy"
+  | "grid" | "briefcase" | "doc" | "cap" | "spark" | "chevron" | "up" | "qr" | "activity";
 
 interface IconProps {
   name: IconName;
@@ -7,6 +9,39 @@ interface IconProps {
 
 const strokePaths: Record<Exclude<IconName, "linkedin">, React.ReactNode> = {
   save: <path d="M19 21l-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />,
+  grid: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1.5" />
+      <rect x="14" y="3" width="7" height="7" rx="1.5" />
+      <rect x="3" y="14" width="7" height="7" rx="1.5" />
+      <rect x="14" y="14" width="7" height="7" rx="1.5" />
+    </>
+  ),
+  briefcase: (
+    <>
+      <rect x="3" y="7" width="18" height="13" rx="2" />
+      <path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18" />
+    </>
+  ),
+  doc: (
+    <>
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+      <path d="M14 3v5h5M9 13h6M9 17h6" />
+    </>
+  ),
+  cap: <path d="M2 9l10-5 10 5-10 5zM6 11v5c3 2 9 2 12 0v-5" />,
+  spark: <path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6" />,
+  chevron: <path d="m9 6 6 6-6 6" />,
+  up: <path d="m6 15 6-6 6 6" />,
+  qr: (
+    <>
+      <rect x="3" y="3" width="7" height="7" rx="1" />
+      <rect x="14" y="3" width="7" height="7" rx="1" />
+      <rect x="3" y="14" width="7" height="7" rx="1" />
+      <path d="M14 14h3v3M21 14v7h-4M14 18v3" />
+    </>
+  ),
+  activity: <path d="M3 12h4l3-8 4 16 3-8h4" />,
   share: (
     <>
       <circle cx="18" cy="5" r="3" />

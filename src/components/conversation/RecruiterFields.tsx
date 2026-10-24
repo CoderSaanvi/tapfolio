@@ -17,8 +17,8 @@ const FIELDS: { key: keyof RecruiterInfo; label: string; type?: string }[] = [
 
 export function RecruiterFields({ value, onChange, onSave }: RecruiterFieldsProps) {
   return (
-    <section className="rounded-2xl border border-line bg-white p-5">
-      <h2 className="mb-3 font-display text-2xl font-extrabold uppercase">Who you met</h2>
+    <section className="rounded-2xl border border-line bg-card p-5">
+      <h2 className="mb-3 font-display text-2xl font-semibold tracking-tight">Who you met</h2>
       <div className="grid grid-cols-2 gap-3">
         {FIELDS.map((f) => (
           <label key={f.key} className="flex flex-col gap-1 text-xs text-ink-2">

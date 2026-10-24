@@ -71,7 +71,7 @@ function sendDate(fromIso: string, days: number): string {
 /** Used when there's no API key, the call fails, or Claude declines. Keeps the app working. */
 function templateDraft({ profile: p, conversation: c, sessions, cardUrl }: FollowUpInput): FollowUpResult {
   const top = sessions.flatMap((s) => s.sections).sort((a, b) => b.ms - a.ms)[0];
-  const project = p.projects.find((pr) => top?.target === `project:${pr.id}`) ?? p.projects[0];
+  const project = p.projects.find((pr) => top?.target === `project-${pr.id}` || top?.target === `project:${pr.id}`) ?? p.projects[0];
   const name = c.recruiter.name.split(" ")[0];
   const where = c.eventName ? ` at ${c.eventName}` : "";
   const body = `${name ? `Hi ${name},` : "Hi there,"}

@@ -9,7 +9,7 @@ export function SessionCard({ session: s }: SessionCardProps) {
   const max = s.sections[0]?.ms ?? 1;
 
   return (
-    <article className="rounded-2xl border border-line border-t-4 border-t-scarlet bg-white p-5 font-sys">
+    <article className="rounded-2xl border border-line border-t-4 border-t-scarlet bg-card p-5 font-sys">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <div>
           <p className="font-semibold">{s.eventName || "No event set"}</p>
@@ -18,7 +18,7 @@ export function SessionCard({ session: s }: SessionCardProps) {
           </p>
         </div>
         <div className="text-right">
-          <p className="font-display text-2xl font-extrabold leading-none text-scarlet tabular-nums">{formatDuration(s.totalMs)}</p>
+          <p className="font-display text-2xl font-extrabold leading-none text-scarlet-bright tabular-nums">{formatDuration(s.totalMs)}</p>
           <p className="text-xs text-ink-2">{timeAgo(s.startedAt)}</p>
         </div>
       </header>
@@ -46,7 +46,7 @@ export function SessionCard({ session: s }: SessionCardProps) {
           <p className="mb-1.5 text-[11px] uppercase tracking-[.2em] text-ink-2">Actions</p>
           <ul className="m-0 flex list-none flex-wrap gap-1.5 p-0">
             {s.clicks.map((c) => (
-              <li key={c.at + c.label} className="rounded-full bg-scarlet-tint px-2.5 py-1 text-xs text-scarlet-deep">
+              <li key={c.at + c.label} className="rounded-full bg-scarlet-tint px-2.5 py-1 text-xs text-scarlet-bright">
                 {c.label}
               </li>
             ))}
