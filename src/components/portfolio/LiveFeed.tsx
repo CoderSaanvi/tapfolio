@@ -7,6 +7,7 @@ interface LiveFeedProps {
 
 /** Latest pushes from public GitHub repos, refreshed every 5 minutes. Hidden if GitHub is unreachable. */
 export async function LiveFeed({ githubUser }: LiveFeedProps) {
+  if (!githubUser) return null;
   const repos = await getLiveRepos(githubUser);
   if (repos.length === 0) return null;
 

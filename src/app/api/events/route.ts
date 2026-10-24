@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { getProfile } from "@/data/profile";
+import { getProfile } from "@/lib/profiles";
 import { appendEvent, listEvents } from "@/lib/events-store";
 import type { ViewEvent } from "@/lib/types";
 
@@ -22,7 +22,7 @@ const EventSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const parsed = EventSchema.safeParse(await req.json());
-    if (!parsed.success || !getProfile(parsed.data.slug)) {
+    if (!parsed.success || !(await getProfile(parsed.data.slug))) {
       return NextResponse.json({ success: false, error: "Invalid event" }, { status: 400 });
     }
     const event: ViewEvent = {

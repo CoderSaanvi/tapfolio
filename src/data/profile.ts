@@ -1,6 +1,6 @@
 import type { Profile } from "@/lib/types";
 
-/** Everything the card and portfolio show. Edit this file to update your card. */
+/** Sample profile, hand-written. Users build their own through onboarding (stored in .data/profiles.json). */
 export const kaushik: Profile = {
   slug: "kaushik",
   firstName: "Kaushik",
@@ -236,10 +236,3 @@ export const kaushik: Profile = {
   resume: { pdf: "/resume.pdf", image: "/resume-page.jpg" },
 };
 
-const profiles: Record<string, Profile> = { [kaushik.slug]: kaushik };
-
-export function getProfile(slug: string): Profile | undefined {
-  return profiles[slug];
-}
-
-export const ownerProfile = kaushik;

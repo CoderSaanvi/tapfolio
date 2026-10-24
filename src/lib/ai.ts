@@ -2,6 +2,7 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
+import { ProfileDraftSchema, type OnboardingAnswers, type ProfileDraft } from "./profile-schema";
 import { formatDuration } from "./time";
 import type { ViewSession } from "./sessions";
 import type { Conversation, FollowUp, Profile, RecruiterInfo } from "./types";
@@ -151,4 +152,55 @@ export async function draftFollowUp(input: FollowUpInput): Promise<FollowUpResul
     // Missing key, network, rate limit, or a malformed response: fall back so the app keeps working.
     return templateDraft(input);
   }
+}
+
+const BUILD_SYSTEM = `You turn a college student's resume into the content of their recruiting portfolio: a contact card plus a one-page portfolio with projects, experience, education, and skills.
+
+Rules:
+- Use only facts from the resume and the student's answers. Never invent employers, dates, numbers, awards, or links. If something isn't there, leave it empty.
+- Write in the student's voice (first person) for the bio and degree paragraphs: confident, specific, no buzzwords, no exaggeration.
+- Aim the bio, headline, and the order of projects at the roles the student says they want.
+- Projects: take them from the resume's projects, research, and the concrete things built at jobs. Put the strongest and most relevant first. If the student says what they're building right now, mark that project isCurrent (create it from their answer if it isn't on the resume, using only what they wrote).
+- Metrics only when the resume states the number.
+- Experience: jobs, internships, and research go in work; clubs, leadership, teams, and activities go in leadership. Most recent first.
+- Facts: GPA and test scores exactly as written; honors and scholarships as wide facts.
+- Keep blurbs under 90 characters and bullets to one line each where possible.`;
+
+/** Reads a resume PDF (plus onboarding answers) and drafts the whole portfolio. Throws if Claude can't produce one. */
+export async function buildProfileDraft(resumePdfBase64: string, answers: OnboardingAnswers): Promise<ProfileDraft> {
+  const client = new Anthropic();
+  const response = await client.beta.messages.parse({
+    model: MODEL,
+    max_tokens: 16000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "medium", format: betaZodOutputFormat(ProfileDraftSchema) },
+    system: BUILD_SYSTEM,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "document", source: { type: "base64", media_type: "application/pdf", data: resumePdfBase64 } },
+          {
+            type: "text",
+            text: `Build my portfolio from the resume above.
+
+<my_answers>
+Roles I'm looking for: ${answers.targetRoles || "(not given)"}
+What I'm building right now: ${answers.building || "(not given)"}
+Line I want recruiters to remember: ${answers.tagline || "(not given)"}
+Email: ${answers.email || "(use resume)"}
+Phone: ${answers.phone || "(use resume)"}
+LinkedIn: ${answers.linkedin || "(use resume)"}
+GitHub: ${answers.github || "(use resume)"}
+</my_answers>`,
+          },
+        ],
+      },
+    ],
+  });
+  if (response.stop_reason === "refusal" || !response.parsed_output) {
+    throw new Error("Claude could not build a portfolio from this resume");
+  }
+  return response.parsed_output;
 }

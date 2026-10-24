@@ -71,7 +71,8 @@ export interface Profile {
   projects: Project[];
   experience: { work: ExperienceItem[]; leadership: ExperienceItem[] };
   skills: { name: string; items: string[] }[];
-  resume: { pdf: string; image: string };
+  /** `image` is a rendered page for the thumbnail; built profiles only have the PDF. */
+  resume: { pdf: string; image?: string };
 }
 
 export type EventType = "open" | "dwell" | "click";

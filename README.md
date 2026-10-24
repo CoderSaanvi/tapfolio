@@ -13,6 +13,12 @@ Nothing has to be installed on the recruiter's phone. AirDrop / Quick Share / th
 
 The recruiter page is built for phones: the contact card comes first, and the card's "Explore" list links to every section (projects, experience, resume, education, skills). A floating "Contact card" button brings them back to it.
 
+## Onboarding: Claude builds your card
+
+The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.ts`) and fills in the whole card and portfolio in this format, usually in under a minute. The phone is remembered as the card's owner (a cookie), so it opens straight to the share screen after that. "Rebuild my card" at the bottom of the share screen starts over with a new resume.
+
+Built profiles live in `.data/profiles.json`, and uploaded photos and resumes in `.data/uploads/`. The hand-written example stays at `/c/kaushik`.
+
 ## Install on your iPhone
 
 Open the app in Safari, tap **Share → Add to Home Screen**. It opens full-screen from its own icon, straight to the QR and **Tap to share**, with a bottom tab bar for Share and Activity.

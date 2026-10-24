@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { getProfile } from "@/data/profile";
+import { getProfile } from "@/lib/profiles";
 import { createConversation } from "@/lib/conversations-store";
 
 const CreateSchema = z.object({
@@ -12,7 +12,7 @@ const CreateSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const parsed = CreateSchema.safeParse(await req.json());
-    if (!parsed.success || !getProfile(parsed.data.slug)) {
+    if (!parsed.success || !(await getProfile(parsed.data.slug))) {
       return NextResponse.json({ success: false, error: "Invalid conversation" }, { status: 400 });
     }
     const convo = await createConversation(parsed.data.slug, parsed.data.eventName.trim());

@@ -6,6 +6,13 @@ interface LogoTileProps {
   size?: "sm" | "md";
 }
 
+/** OSU gets the Block O; any other school gets its initials. */
+export function schoolLogo(school: string): { logo?: string; mark?: string } {
+  if (/ohio state/i.test(school)) return { logo: "/osu-logo.svg" };
+  const mark = school.replace(/^the\s+/i, "").split(/\s+/).filter((w) => /^[A-Z]/.test(w)).slice(0, 3).map((w) => w[0]).join("");
+  return { mark: mark || "U" };
+}
+
 /** Square logo tile. Images sit on white so dark marks (like the Block O lettering) stay legible. */
 export function LogoTile({ logo, mark, size = "md" }: LogoTileProps) {
   const box = size === "sm" ? "h-10 w-10 rounded-[10px]" : "h-12 w-12 rounded-xl";

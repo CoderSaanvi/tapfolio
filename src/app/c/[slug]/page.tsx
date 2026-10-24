@@ -10,21 +10,23 @@ import { ResumeSection } from "@/components/portfolio/ResumeSection";
 import { SiteNav } from "@/components/portfolio/SiteNav";
 import { SkillsSection } from "@/components/portfolio/SkillsSection";
 import { ViewTracker } from "@/components/tracking/ViewTracker";
-import { getProfile } from "@/data/profile";
+import { getProfile } from "@/lib/profiles";
+
+export const dynamic = "force-dynamic";
 
 interface CardPageProps {
   params: { slug: string };
 }
 
-export function generateMetadata({ params }: CardPageProps): Metadata {
-  const p = getProfile(params.slug);
+export async function generateMetadata({ params }: CardPageProps): Promise<Metadata> {
+  const p = await getProfile(params.slug);
   if (!p) return { title: "Card not found" };
   return { title: `${p.firstName} ${p.lastName}`, description: `${p.title} · ${p.focus}`, openGraph: { images: [p.photo] } };
 }
 
 /** What the recruiter's phone opens after the tap: the contact card first, the portfolio behind it. */
-export default function CardPage({ params }: CardPageProps) {
-  const p = getProfile(params.slug);
+export default async function CardPage({ params }: CardPageProps) {
+  const p = await getProfile(params.slug);
   if (!p) notFound();
 
   return (

@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getProfile } from "@/data/profile";
+import { getProfile } from "@/lib/profiles";
 import { draftFollowUp } from "@/lib/ai";
 import { getConversation, updateConversation } from "@/lib/conversations-store";
 import { listEvents } from "@/lib/events-store";
@@ -13,7 +13,7 @@ interface RouteContext {
 export async function POST(req: NextRequest, { params }: RouteContext) {
   try {
     const convo = await getConversation(params.id);
-    const profile = convo && getProfile(convo.slug);
+    const profile = convo && (await getProfile(convo.slug));
     if (!convo || !profile) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
 
     const events = eventsForConversation(await listEvents(), convo);

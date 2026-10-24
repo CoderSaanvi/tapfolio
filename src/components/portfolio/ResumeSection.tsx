@@ -36,7 +36,11 @@ export function ResumeSection({ profile: p }: ResumeSectionProps) {
           aria-label="View resume full size"
           className="w-24 flex-none overflow-hidden rounded-lg border border-line bg-white sm:w-32"
         >
-          <Image src={p.resume.image} alt={`${p.fullName}'s one-page resume`} width={1105} height={1430} sizes="128px" className="block h-auto w-full" />
+          {p.resume.image ? (
+            <Image src={p.resume.image} alt={`${p.fullName}'s one-page resume`} width={1105} height={1430} sizes="128px" className="block h-auto w-full" />
+          ) : (
+            <span className="grid aspect-[8.5/11] place-items-center font-mono text-xs font-medium text-scarlet">PDF</span>
+          )}
         </button>
         <div className="min-w-0">
           <p className="font-medium">The one-page version</p>
@@ -62,7 +66,11 @@ export function ResumeSection({ profile: p }: ResumeSectionProps) {
               </button>
             </div>
             <div className="overflow-auto bg-white pb-[env(safe-area-inset-bottom)]">
-              <Image src={p.resume.image} alt={`${p.fullName}'s resume, full size`} width={1105} height={1430} sizes="900px" loading="eager" className="block h-auto w-full" />
+              {p.resume.image ? (
+                <Image src={p.resume.image} alt={`${p.fullName}'s resume, full size`} width={1105} height={1430} sizes="900px" loading="eager" className="block h-auto w-full" />
+              ) : (
+                <iframe src={p.resume.pdf} title={`${p.fullName}'s resume`} className="block h-[80dvh] w-full" />
+              )}
             </div>
           </div>
         </div>

@@ -12,10 +12,11 @@ import type { Profile } from "@/lib/types";
 
 interface ShareScreenProps {
   profile: Profile;
+  justBuilt?: boolean;
 }
 
 /** Home screen of the owner app: the QR and tap-to-share come first, everything else is below. */
-export function ShareScreen({ profile: p }: ShareScreenProps) {
+export function ShareScreen({ profile: p, justBuilt }: ShareScreenProps) {
   const [origin, setOrigin] = useState("");
   const [eventName, setEventName] = useState("");
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -50,6 +51,14 @@ export function ShareScreen({ profile: p }: ShareScreenProps) {
         </Link>
       </header>
 
+      {justBuilt && (
+        <Link href={`/c/${p.slug}`} className="flex items-center gap-3 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-ink no-underline">
+          <span className="text-lg">✓</span>
+          <span className="flex-1"><b className="font-semibold">Your Tapfolio is ready.</b> Take a look before you share it.</span>
+          <span className="text-emerald-400">Open ›</span>
+        </Link>
+      )}
+
       <div className="rounded-[28px] border border-line border-t-[3px] border-t-scarlet bg-card p-5 shadow-card">
         <div className="mx-auto w-full max-w-[260px] rounded-2xl bg-white p-4">{cardUrl && <QrCode value={withSrc("qr")} />}</div>
         <p className="mt-3 text-center text-xs text-ink-2">Have them point their camera here</p>
@@ -64,6 +73,10 @@ export function ShareScreen({ profile: p }: ShareScreenProps) {
       <p className="mt-2 px-1 font-mono text-[11px] uppercase tracking-[.14em] text-ink-2">At the booth</p>
       <EventField value={eventName} onChange={setEventName} />
       <ConversationRecorder slug={p.slug} eventName={eventName} onConversation={setConversationId} />
+
+      <Link href="/onboarding" className="mt-4 text-center text-xs text-ink-2 no-underline">
+        New resume? <span className="text-scarlet-bright">Rebuild my card</span>
+      </Link>
 
       <OwnerTabBar />
     </main>

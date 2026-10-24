@@ -1,4 +1,4 @@
-import { LogoTile } from "@/components/ui/LogoTile";
+import { LogoTile, schoolLogo } from "@/components/ui/LogoTile";
 import { SectionTitle } from "@/components/ui/SectionTitle";
 import { TrackedSection } from "@/components/tracking/TrackedSection";
 import type { Profile } from "@/lib/types";
@@ -13,10 +13,10 @@ export function EducationSection({ profile: p }: EducationSectionProps) {
       <SectionTitle title="Education" />
       <div className="rounded-2xl border border-line border-t-[3px] border-t-scarlet bg-card p-5">
         <div className="flex items-center gap-4">
-          <LogoTile logo="/osu-logo.svg" />
+          <LogoTile {...schoolLogo(p.school.name)} />
           <div className="leading-snug">
             <p className="font-serif text-lg [font-variant:small-caps]">{p.school.name}</p>
-            <p className="text-sm text-ink-2">B.S. {p.degree.major} · {p.degree.minor.split(" · ")[0]}</p>
+            <p className="text-sm text-ink-2">{[p.degree.major, p.degree.minor.split(" · ")[0]].filter(Boolean).join(" · ")}</p>
           </div>
         </div>
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { LogoTile } from "@/components/ui/LogoTile";
+import { LogoTile, schoolLogo } from "@/components/ui/LogoTile";
 import { ExploreLinks } from "./ExploreLinks";
 import { QuickActions } from "./QuickActions";
 import { SaveContactButton } from "./SaveContactButton";
@@ -16,9 +16,9 @@ export function BusinessCard({ profile: p }: BusinessCardProps) {
       <div className="relative aspect-[5/4] overflow-hidden">
         <Image src={p.photo} alt={p.fullName} fill priority sizes="(max-width: 1024px) 100vw, 420px" className="object-cover object-[50%_30%]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-card" />
-        <span className="absolute left-4 top-[max(16px,env(safe-area-inset-top))] rounded-full border border-white/15 bg-black/40 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[.18em] text-white/90 backdrop-blur">
+        {p.location && <span className="absolute left-4 top-[max(16px,env(safe-area-inset-top))] rounded-full border border-white/15 bg-black/40 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[.18em] text-white/90 backdrop-blur">
           {p.location}
-        </span>
+        </span>}
       </div>
 
       <div className="relative -mt-14 flex flex-col gap-5 px-5 pb-5">
@@ -30,7 +30,7 @@ export function BusinessCard({ profile: p }: BusinessCardProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <LogoTile logo="/osu-logo.svg" size="sm" />
+          <LogoTile {...schoolLogo(p.school.name)} size="sm" />
           <div className="flex flex-col leading-tight">
             <span className="font-serif text-[15px] text-ink [font-variant:small-caps]">{p.school.name}</span>
             <span className="text-[11px] uppercase tracking-[.08em] text-ink-2">
