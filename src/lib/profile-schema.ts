@@ -7,6 +7,8 @@ const Experience = z.object({
   org: z.string().describe("Organization, optionally ' · City, ST'"),
   context: z.string().describe("One sentence on what the organization is, or empty"),
   bullets: z.array(z.string()).describe("2-4 concise accomplishment bullets from the resume"),
+  summary: z.string().describe("Exactly two sentences, first person, on what the role amounted to: what they built or owned and the outcome. No bullet symbols."),
+  metrics: z.array(z.object({ value: z.string(), label: z.string() })).describe("Up to 3 numbers stated in this role's bullets (value '40%', label 'faster order lookup'). Empty if the resume gives none."),
   badge: z.string().describe("Award/placement to highlight, or empty"),
   atSchool: z.boolean().describe("True if this is a club, lab, team, or job at their own university"),
 });

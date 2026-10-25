@@ -5,7 +5,46 @@ import { z } from "zod";
 import { ProfileDraftSchema, type OnboardingAnswers, type ProfileDraft } from "./profile-schema";
 import { formatDuration } from "./time";
 import type { ViewSession } from "./sessions";
-import type { Conversation, FollowUp, Profile, RecruiterInfo } from "./types";
+import type { Conversation, ExperienceItem, FollowUp, Metric, Profile, RecruiterInfo } from "./types";
+
+const ExperienceSummariesSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string().describe("Copied exactly from the input"),
+      summary: z.string().describe("Exactly two sentences, first person, on what the role amounted to: what they built or owned and the outcome. No bullet symbols."),
+      metrics: z.array(z.object({ value: z.string(), label: z.string() })).describe("Up to 3 numbers stated in the bullets (value '40%', label 'faster order lookup'). Empty if there are none."),
+    }),
+  ),
+});
+
+/**
+ * Two-sentence summaries plus any stated numbers for experience items built
+ * before summaries existed. Uses only the bullets already on the card.
+ */
+export async function summarizeExperience(items: ExperienceItem[]): Promise<Map<string, { summary: string; metrics: Metric[] }>> {
+  const client = new Anthropic();
+  const response = await client.beta.messages.parse({
+    model: MODEL,
+    max_tokens: 4000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "low", format: betaZodOutputFormat(ExperienceSummariesSchema) },
+    system:
+      "You condense a student's resume experience entries for their recruiting card. Use only the facts given; never invent numbers, employers, or outcomes. Numbers go in metrics only when they appear in the bullets.",
+    messages: [
+      {
+        role: "user",
+        content: `Summarize each role.\n\n${JSON.stringify(items.map((e) => ({ title: e.title, org: e.org, context: e.context ?? "", bullets: e.bullets })), null, 2)}`,
+      },
+    ],
+  });
+  const out = new Map<string, { summary: string; metrics: Metric[] }>();
+  if (response.stop_reason === "refusal" || !response.parsed_output) return out;
+  for (const it of response.parsed_output.items) {
+    if (it.summary.trim()) out.set(it.title, { summary: it.summary.trim(), metrics: it.metrics.filter((m) => m.value.trim()).slice(0, 3) });
+  }
+  return out;
+}
 
 const MODEL = "claude-opus-5-5";
 
@@ -162,7 +201,7 @@ Rules:
 - Aim the bio, headline, and the order of projects at the roles the student says they want.
 - Projects: take them from the resume's projects, research, and the concrete things built at jobs. Put the strongest and most relevant first. If the student says what they're building right now, mark that project isCurrent (create it from their answer if it isn't on the resume, using only what they wrote).
 - Metrics only when the resume states the number.
-- Experience: jobs, internships, and research go in work; clubs, leadership, teams, and activities go in leadership. Most recent first.
+- Experience: jobs, internships, and research go in work; clubs, leadership, teams, and activities go in leadership. Most recent first. Each gets a two-sentence summary and, only when the resume states numbers for that role, up to 3 metrics.
 - Facts: GPA and test scores exactly as written; honors and scholarships as wide facts.
 - Keep blurbs under 90 characters and bullets to one line each where possible.`;
 

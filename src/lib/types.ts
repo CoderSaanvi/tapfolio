@@ -40,6 +40,10 @@ export interface ExperienceItem {
   org: string;
   context?: string;
   bullets: string[];
+  /** Two sentences on what the role amounted to; shown in place of the bullets, which move behind "Details". */
+  summary?: string;
+  /** Numbers from this role's bullets, shown big and red like project metrics. */
+  metrics?: Metric[];
   badge?: string;
   /** Image in public/ for the logo tile, else `mark` initials are shown. */
   logo?: string;
@@ -73,6 +77,8 @@ export interface Profile {
   tagline: string;
   photo: string;
   school: { name: string; unit: string; year: string };
+  /** Strip across the top of the card. Defaults to the school; the owner can change the text or blank it to hide. */
+  banner?: { text: string; logo?: string };
   degree: { label: string; major: string; minor: string; about: string[] };
   facts: Fact[];
   contact: { phone: string; email: string; linkedin: string; github: string; githubUser: string };

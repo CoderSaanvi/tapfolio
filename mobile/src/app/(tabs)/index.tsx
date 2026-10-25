@@ -17,10 +17,25 @@ export default function ShareScreen() {
   const [eventName, setEventName] = useState("");
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
+  const [banner, setBanner] = useState<string | null>(null);
+  const [bannerError, setBannerError] = useState<string | null>(null);
 
   useEffect(() => {
     SecureStore.getItemAsync(EVENT_KEY).then((v) => v && setEventName(v)).catch(() => undefined);
   }, []);
+
+  async function saveBanner() {
+    if (banner === null || !profile) return;
+    const current = profile.banner?.text ?? profile.school?.name ?? "";
+    if (banner.trim() === current.trim()) return;
+    try {
+      await api("/api/profile/me", { method: "PATCH", body: { banner: { text: banner.trim() } } });
+      setBannerError(null);
+      void refresh();
+    } catch (e) {
+      setBannerError(e instanceof Error ? e.message : "Couldn't save the banner.");
+    }
+  }
 
   function updateEvent(v: string) {
     setEventName(v);
@@ -77,6 +92,17 @@ export default function ShareScreen() {
           Call and Email on your card go to {[profile.contact.phone, profile.contact.email].filter(Boolean).join(" and ") || "nothing yet: rebuild with a resume that lists them"}.
         </Text>
       )}
+
+      <Label>Your card</Label>
+      <Field
+        label="Banner across the top"
+        value={banner ?? profile.banner?.text ?? profile.school?.name ?? ""}
+        onChangeText={setBanner}
+        onBlur={saveBanner}
+        placeholder="e.g. The Ohio State University (blank hides it)"
+      />
+      <Text style={s.small}>Shows with the school logo when it names a school we know.</Text>
+      <ErrorText>{bannerError}</ErrorText>
 
       <Label>At the booth</Label>
       <Field label="Where are you?" value={eventName} onChangeText={updateEvent} placeholder="e.g. OSU Engineering Career Fair" />
