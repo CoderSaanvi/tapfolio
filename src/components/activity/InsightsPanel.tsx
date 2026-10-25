@@ -64,13 +64,18 @@ export function InsightsPanel({ insights: i }: InsightsPanelProps) {
       <div className="mt-5 flex flex-col gap-5">
         <Bars title="Most looked-at projects" items={i.topProjects} empty="No one has scrolled to a project yet." />
         <Bars title="Most looked-at sections" items={i.topSections} empty="No section views yet." />
-        {(i.topClicks.length > 0 || i.openedVia.length > 0) && (
+        {(i.topClicks.length > 0 || i.openedVia.length > 0 || (i.leftInfo ?? 0) > 0) && (
           <div className="flex flex-wrap gap-1.5">
             {i.openedVia.map((v) => (
               <span key={v.label} className="rounded-full bg-wash px-2.5 py-1 text-xs text-ink-2">
                 {v.count}× {v.label}
               </span>
             ))}
+            {(i.leftInfo ?? 0) > 0 && (
+              <span className="rounded-full bg-wash px-2.5 py-1 text-xs text-ink-2">
+                {i.leftInfo} left their info
+              </span>
+            )}
             {audienceKnown > 0 && (
               <span className="rounded-full bg-wash px-2.5 py-1 text-xs text-ink-2">
                 {i.audience.recruiter} recruiters · {i.audience.student} students

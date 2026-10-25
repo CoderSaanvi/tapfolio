@@ -5,13 +5,15 @@ import { ContactRow } from "@/components/network/ContactRow";
 import { buildContacts } from "@/lib/contacts";
 import { listConversations } from "@/lib/conversations-store";
 import { getOwnerProfile } from "@/lib/profiles";
+import { listVisitors } from "@/lib/visitors-store";
 import type { Contact } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 async function load(slug: string): Promise<{ contacts: Contact[]; error: boolean }> {
   try {
-    return { contacts: buildContacts(await listConversations(slug)), error: false };
+    const [conversations, visitors] = await Promise.all([listConversations(slug), listVisitors(slug)]);
+    return { contacts: buildContacts(conversations, visitors), error: false };
   } catch {
     return { contacts: [], error: true };
   }
@@ -43,7 +45,7 @@ export default async function NetworkPage() {
 
       {contacts.length === 0 ? (
         <p className="rounded-xl border border-dashed border-line bg-card p-6 text-center text-sm text-ink-2">
-          People you meet show up here once you add their name or email to a conversation.
+          People show up here when they leave their info on your card, or when you add their name or email to a conversation.
         </p>
       ) : (
         contacts.map((c) => <ContactRow key={c.id} contact={c} />)

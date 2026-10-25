@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { BusinessCard } from "@/components/card/BusinessCard";
+import { LeaveInfo } from "@/components/card/LeaveInfo";
 import { BackToCard } from "@/components/portfolio/BackToCard";
 import { EducationSection } from "@/components/portfolio/EducationSection";
 import { ExperienceSection } from "@/components/portfolio/ExperienceSection";
@@ -75,8 +76,9 @@ export default async function CardPage({ params, searchParams }: CardPageProps) 
       )}
 
       <main className="mx-auto grid max-w-[1120px] grid-cols-[minmax(0,1fr)] gap-12 px-4 pb-28 pt-4 lg:grid-cols-[400px_minmax(0,1fr)] lg:gap-14 lg:px-6 lg:pt-10">
-        <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+        <aside className="flex min-w-0 flex-col gap-4 lg:sticky lg:top-24 lg:self-start">
           <BusinessCard profile={p} />
+          <LeaveInfo slug={p.slug} firstName={p.firstName} />
         </aside>
 
         <div className="flex min-w-0 flex-col gap-16">

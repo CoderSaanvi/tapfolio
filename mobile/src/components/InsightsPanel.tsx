@@ -61,13 +61,14 @@ export function InsightsPanel({ insights: i }: { insights: Insights }) {
       </View>
       <Bars title="Most looked-at projects" items={i.topProjects.slice(0, 3)} empty="No one has reached a project yet." />
       <Bars title="Most looked-at sections" items={i.topSections.slice(0, 3)} empty="No section views yet." />
-      {(i.openedVia.length > 0 || i.topClicks.length > 0) && (
+      {(i.openedVia.length > 0 || i.topClicks.length > 0 || (i.leftInfo ?? 0) > 0) && (
         <View style={s.chips}>
           {i.openedVia.map((v) => (
             <Text key={v.label} style={s.chip}>
               {v.count}× {v.label}
             </Text>
           ))}
+          {(i.leftInfo ?? 0) > 0 && <Text style={[s.chip, s.chipHot]}>{i.leftInfo} left their info</Text>}
           {known > 0 && (
             <Text style={s.chip}>
               {i.audience.recruiter} recruiters · {i.audience.student} students

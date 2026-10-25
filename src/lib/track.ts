@@ -35,6 +35,11 @@ function newSessionId(slug: string): string {
   }
 }
 
+/** The current viewing session, so the "leave your info" form can link itself to it. */
+export function trackingContext(): TrackContext | null {
+  return ctx;
+}
+
 /** Starts (or resumes, within this tab) a viewing session for one card. */
 export function initTracking(slug: string, eventName?: string, conversationId?: string, audience?: Audience): void {
   ctx = { sessionId: newSessionId(slug), slug, eventName, conversationId, audience };

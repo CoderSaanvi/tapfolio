@@ -26,7 +26,7 @@ function metLabel(iso: string): string {
   return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
-/** Everyone you've met: name, company, role, email, and where. Tap for the conversation; ✉ to email. */
+/** Everyone you've met or who left their info on your card. Tap for the conversation (if any); ✉ to email. */
 export default function Network() {
   const insets = useSafeAreaInsets();
   const [contacts, setContacts] = useState<Contact[] | null>(null);
@@ -81,7 +81,7 @@ export default function Network() {
 
       {contacts?.length === 0 && (
         <View style={s.empty}>
-          <Text style={s.emptyText}>People show up here once you add their name or email to a conversation.</Text>
+          <Text style={s.emptyText}>People show up here when they leave their info on your card, or when you add their name or email to a conversation.</Text>
         </View>
       )}
       {contacts && contacts.length > 0 && shown.length === 0 && <Text style={s.emptyText}>No one matches “{query}”.</Text>}
@@ -89,8 +89,13 @@ export default function Network() {
       {shown.map((c) => {
         const where = [c.company, c.role].filter(Boolean).join(" · ");
         const chip = c.followUp?.status === "sent" ? "Followed up" : c.followUp ? "Draft ready" : "Follow up";
+        const convoId = c.latestConversationId;
         return (
-          <Pressable key={c.id} onPress={() => router.push({ pathname: "/conversation/[id]", params: { id: c.latestConversationId } })} style={s.row}>
+          <Pressable
+            key={c.id}
+            onPress={() => (convoId ? router.push({ pathname: "/conversation/[id]", params: { id: convoId } }) : c.email && Linking.openURL(`mailto:${c.email}`))}
+            style={s.row}
+          >
             <View style={s.avatar}>
               <Text style={s.avatarText}>{initials(c)}</Text>
             </View>
@@ -98,10 +103,12 @@ export default function Network() {
               <Text style={s.who} numberOfLines={1}>{c.name || c.email || c.company}</Text>
               {where ? <Text style={s.meta} numberOfLines={1}>{where}</Text> : null}
               <Text style={s.meta} numberOfLines={1}>
+                {c.source !== "conversation" ? "Left their info · " : ""}
                 {c.events[0] ? `${c.events[0]} · ` : ""}
                 {metLabel(c.lastMetAt)}
                 {c.conversationIds.length > 1 ? ` · met ${c.conversationIds.length}×` : ""}
               </Text>
+              {c.notes ? <Text style={[s.meta, { fontStyle: "italic" }]} numberOfLines={1}>{c.notes}</Text> : null}
             </View>
             <View style={{ alignItems: "flex-end", gap: 6 }}>
               <View style={[s.chip, c.followUp?.status === "sent" && { backgroundColor: C.wash }]}>
