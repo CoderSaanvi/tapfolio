@@ -46,6 +46,7 @@ export interface Insights {
   topClicks: { target: string; label: string; count: number }[];
   openedVia: { label: string; count: number }[];
   audience: { recruiter: number; student: number; unknown: number };
+  leftInfo?: number;
   lastViewedAt?: string;
 }
 
@@ -59,7 +60,8 @@ export interface Contact {
   firstMetAt: string;
   lastMetAt: string;
   conversationIds: string[];
-  latestConversationId: string;
+  latestConversationId?: string;
+  source: "conversation" | "visitor" | "both";
   followUp?: { status: "draft" | "sent"; sendOn: string };
   notes: string;
 }

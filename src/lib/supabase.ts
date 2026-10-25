@@ -1,6 +1,6 @@
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
-import type { Conversation, Profile, ViewEvent } from "./types";
+import type { Conversation, Profile, ViewEvent, Visitor } from "./types";
 
 /**
  * Every Supabase call goes through this file. Server-only, using the service
@@ -74,6 +74,17 @@ export async function sbSaveConversation(c: Conversation): Promise<void> {
       .from("conversations")
       .upsert({ id: c.id, profile_slug: c.slug, data: c, started_at: c.startedAt, deleted_at: c.deletedAt ?? null }),
   );
+}
+
+// Visitors (people who left their info on the card)
+
+export async function sbInsertVisitor(v: Visitor): Promise<void> {
+  check(await sb().from("visitors").insert({ id: v.id, profile_slug: v.slug, data: v, created_at: v.at }));
+}
+
+export async function sbListVisitors(slug: string): Promise<Visitor[]> {
+  const rows = check(await sb().from("visitors").select("data").eq("profile_slug", slug).order("created_at", { ascending: true }));
+  return (rows ?? []).map((r: { data: Visitor }) => r.data);
 }
 
 // View events

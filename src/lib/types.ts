@@ -124,10 +124,29 @@ export interface Insights {
   topClicks: { target: string; label: string; count: number }[];
   openedVia: { label: string; count: number }[];
   audience: { recruiter: number; student: number; unknown: number };
+  /** How many viewers filled in the "leave your info" form. */
+  leftInfo?: number;
   lastViewedAt?: string;
 }
 
-/** One person in the owner's network, folded from every conversation with them. */
+/** Someone who scanned the card and left their details on it. */
+export interface Visitor {
+  id: string;
+  slug: string;
+  sessionId?: string;
+  conversationId?: string;
+  eventName?: string;
+  audience?: Audience;
+  name: string;
+  email: string;
+  company: string;
+  role: string;
+  note: string;
+  userAgent?: string;
+  at: string;
+}
+
+/** One person in the owner's network, folded from every conversation with them and anything they left on the card. */
 export interface Contact {
   id: string;
   name: string;
@@ -138,7 +157,9 @@ export interface Contact {
   firstMetAt: string;
   lastMetAt: string;
   conversationIds: string[];
-  latestConversationId: string;
+  latestConversationId?: string;
+  /** Where we know them from: a conversation the owner logged, their own form on the card, or both. */
+  source: "conversation" | "visitor" | "both";
   followUp?: { status: "draft" | "sent"; sendOn: string };
   notes: string;
 }
