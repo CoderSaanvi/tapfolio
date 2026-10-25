@@ -71,8 +71,10 @@ export async function uploadFile(uri: string, contentType: string, onProgress?: 
       },
     });
     const result = await task.uploadAsync();
-    if (!result || result.status < 200 || result.status >= 300) throw new Error();
-  } catch {
+    if (!result) throw new ApiError("Upload failed before reaching storage. Check your connection and try again.", 0);
+    if (result.status < 200 || result.status >= 300) throw new ApiError(`Upload failed: storage answered ${result.status}. Try again.`, result.status);
+  } catch (e) {
+    if (e instanceof ApiError) throw e;
     throw new ApiError("Upload failed. Check your connection and try again.", 0);
   }
   return ticket.url;

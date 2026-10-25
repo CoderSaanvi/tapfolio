@@ -24,8 +24,8 @@ export async function uploadFile(file: File, onProgress?: (pct: number) => void)
     xhr.open("PUT", uploadUrl);
     xhr.setRequestHeader("Content-Type", file.type);
     xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(Math.round((e.loaded / e.total) * 100));
-    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error("Upload failed. Try again.")));
-    xhr.onerror = () => reject(new Error("Upload failed. Check your connection."));
+    xhr.onload = () => (xhr.status >= 200 && xhr.status < 300 ? resolve() : reject(new Error(`Upload failed: storage answered ${xhr.status}. Try again.`)));
+    xhr.onerror = () => reject(new Error("Upload failed before reaching storage. Check your connection."));
     xhr.send(file);
   });
   return url;

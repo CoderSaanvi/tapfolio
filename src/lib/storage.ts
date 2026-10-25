@@ -22,6 +22,10 @@ export async function createUploadTicket(mime: string): Promise<UploadTicket | n
     const { uploadUrl, publicUrl } = await sbSignedUpload(name);
     return { uploadUrl, url: publicUrl };
   }
+  // Hosted builds have no writable disk; say so instead of failing on the PUT with a generic error.
+  if (process.env.VERCEL) {
+    throw new Error("Storage isn't set up on this server: add NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in Vercel, then redeploy.");
+  }
   return { uploadUrl: `/api/uploads/local/${name}`, url: `${LOCAL_PREFIX}${name}` };
 }
 

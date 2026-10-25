@@ -18,7 +18,9 @@ export async function POST(req: NextRequest) {
     const ticket = await createUploadTicket(parsed.data.contentType);
     if (!ticket) return NextResponse.json({ success: false, error: "Unsupported file type." }, { status: 400 });
     return NextResponse.json({ success: true, data: ticket });
-  } catch {
-    return NextResponse.json({ success: false, error: "Could not start the upload." }, { status: 500 });
+  } catch (e) {
+    // The message is ours or Supabase's (e.g. a bad service key); it names the cause without leaking secrets.
+    const reason = e instanceof Error && e.message ? e.message : "unknown error";
+    return NextResponse.json({ success: false, error: `Could not start the upload: ${reason}` }, { status: 500 });
   }
 }
