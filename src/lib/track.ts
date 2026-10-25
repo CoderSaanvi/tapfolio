@@ -1,12 +1,13 @@
 "use client";
 
-import type { EventType } from "./types";
+import type { Audience, EventType } from "./types";
 
 interface TrackContext {
   sessionId: string;
   slug: string;
   eventName?: string;
   conversationId?: string;
+  audience?: Audience;
 }
 
 let ctx: TrackContext | null = null;
@@ -35,8 +36,8 @@ function newSessionId(slug: string): string {
 }
 
 /** Starts (or resumes, within this tab) a viewing session for one card. */
-export function initTracking(slug: string, eventName?: string, conversationId?: string): void {
-  ctx = { sessionId: newSessionId(slug), slug, eventName, conversationId };
+export function initTracking(slug: string, eventName?: string, conversationId?: string, audience?: Audience): void {
+  ctx = { sessionId: newSessionId(slug), slug, eventName, conversationId, audience };
 }
 
 export function track(type: EventType, target: string, label: string, ms?: number): void {

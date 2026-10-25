@@ -2,23 +2,26 @@ import { router, useFocusEffect } from "expo-router";
 import { useCallback, useState } from "react";
 import { Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { InsightsPanel } from "@/components/InsightsPanel";
 import { ErrorText, H1, Sub } from "@/components/ui";
 import { api } from "@/lib/api";
 import { dueLabel, isDue } from "@/lib/followup";
 import { C } from "@/lib/theme";
-import type { Conversation } from "@/lib/types";
+import type { Conversation, Insights } from "@/lib/types";
 
-/** Every conversation, follow-ups due first. Pull to refresh. */
+/** What viewers looked at most, then every conversation with follow-ups due first. Pull to refresh. */
 export default function Activity() {
   const insets = useSafeAreaInsets();
   const [items, setItems] = useState<Conversation[] | null>(null);
+  const [insights, setInsights] = useState<Insights | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
   const load = useCallback(async () => {
     try {
-      const list = await api<Conversation[]>("/api/conversations");
+      const [list, ins] = await Promise.all([api<Conversation[]>("/api/conversations"), api<Insights>("/api/insights")]);
       setItems([...list].sort((a, b) => Number(Boolean(b.followUp && isDue(b.followUp))) - Number(Boolean(a.followUp && isDue(a.followUp)))));
+      setInsights(ins);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't load activity.");
@@ -38,8 +41,10 @@ export default function Activity() {
       refreshControl={<RefreshControl refreshing={refreshing} tintColor={C.ink2} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
     >
       <H1>Activity</H1>
-      <Sub>Your conversations and follow-ups.</Sub>
+      <Sub>What people look at on your card, plus your conversations and follow-ups.</Sub>
       <ErrorText>{error}</ErrorText>
+      {insights && insights.views > 0 && <InsightsPanel insights={insights} />}
+      <Text style={s.section}>Conversations</Text>
       {items?.length === 0 && (
         <View style={s.empty}>
           <Text style={s.emptyText}>Tap Start conversation on the Share tab when you walk up to a recruiter.</Text>
@@ -68,6 +73,7 @@ export default function Activity() {
 }
 
 const s = StyleSheet.create({
+  section: { color: C.ink, fontSize: 20, fontWeight: "700", marginTop: 8 },
   empty: { borderWidth: 1, borderStyle: "dashed", borderColor: C.line, borderRadius: 16, padding: 24 },
   emptyText: { color: C.ink2, textAlign: "center", fontSize: 14 },
   row: { flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: C.card, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: C.line, padding: 16 },

@@ -14,7 +14,9 @@ interface ViewTrackerProps {
 export function ViewTracker({ slug }: ViewTrackerProps) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    initTracking(slug, params.get("ev") ?? undefined, params.get("c") ?? undefined);
+    const forParam = params.get("for");
+    const audience = forParam === "recruiter" || forParam === "student" ? forParam : undefined;
+    initTracking(slug, params.get("ev") ?? undefined, params.get("c") ?? undefined, audience);
     const via: Record<string, string> = { tap: " via tap-to-share", qr: " via QR scan" };
     track("open", "card", `Opened card${via[params.get("src") ?? ""] ?? ""}`);
 

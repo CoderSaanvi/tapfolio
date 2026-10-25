@@ -13,6 +13,7 @@ const EventSchema = z.object({
   ms: z.number().int().nonnegative().max(60 * 60 * 1000).optional(),
   eventName: z.string().max(120).optional(),
   conversationId: z.string().uuid().optional(),
+  audience: z.enum(["recruiter", "student"]).optional(),
 });
 
 /**

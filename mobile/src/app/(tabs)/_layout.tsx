@@ -2,7 +2,7 @@ import { Redirect } from "expo-router";
 import { NativeTabs } from "expo-router/native-tabs";
 import { useSession } from "@/lib/session";
 
-/** Share + Activity. A phone that doesn't own a card yet goes to onboarding instead. */
+/** Share + Activity + Network. A phone that doesn't own a card yet goes to onboarding instead. */
 export default function TabsLayout() {
   const { status } = useSession();
   if (status === "loading") return null;
@@ -17,6 +17,10 @@ export default function TabsLayout() {
       <NativeTabs.Trigger name="activity">
         <NativeTabs.Trigger.Icon sf="waveform.path.ecg" md="monitoring" />
         <NativeTabs.Trigger.Label>Activity</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="network">
+        <NativeTabs.Trigger.Icon sf="person.2" md="group" />
+        <NativeTabs.Trigger.Label>Network</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

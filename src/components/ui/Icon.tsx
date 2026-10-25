@@ -1,6 +1,6 @@
 export type IconName =
   | "save" | "linkedin" | "share" | "phone" | "mail" | "pin" | "globe" | "code" | "arrow" | "tap" | "copy"
-  | "grid" | "briefcase" | "doc" | "cap" | "spark" | "chevron" | "up" | "qr" | "activity";
+  | "grid" | "briefcase" | "doc" | "cap" | "spark" | "chevron" | "up" | "qr" | "activity" | "people";
 
 interface IconProps {
   name: IconName;
@@ -42,6 +42,12 @@ const strokePaths: Record<Exclude<IconName, "linkedin">, React.ReactNode> = {
     </>
   ),
   activity: <path d="M3 12h4l3-8 4 16 3-8h4" />,
+  people: (
+    <>
+      <circle cx="9" cy="8" r="3.5" />
+      <path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4.5-6.2" />
+    </>
+  ),
   share: (
     <>
       <circle cx="18" cy="5" r="3" />

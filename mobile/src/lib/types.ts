@@ -24,6 +24,44 @@ export interface Profile {
   headline: string;
   photo: string;
   projects: Project[];
+  contact?: { phone: string; email: string; linkedin: string; github: string };
+}
+
+export type Audience = "recruiter" | "student";
+
+export interface InsightItem {
+  target: string;
+  label: string;
+  ms: number;
+  sessions: number;
+}
+
+export interface Insights {
+  views: number;
+  viewers: number;
+  totalMs: number;
+  avgMs: number;
+  topProjects: InsightItem[];
+  topSections: InsightItem[];
+  topClicks: { target: string; label: string; count: number }[];
+  openedVia: { label: string; count: number }[];
+  audience: { recruiter: number; student: number; unknown: number };
+  lastViewedAt?: string;
+}
+
+export interface Contact {
+  id: string;
+  name: string;
+  company: string;
+  role: string;
+  email: string;
+  events: string[];
+  firstMetAt: string;
+  lastMetAt: string;
+  conversationIds: string[];
+  latestConversationId: string;
+  followUp?: { status: "draft" | "sent"; sendOn: string };
+  notes: string;
 }
 
 export interface RecruiterInfo {

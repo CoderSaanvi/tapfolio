@@ -86,6 +86,9 @@ export interface Profile {
 
 export type EventType = "open" | "dwell" | "click";
 
+/** Who the owner shared the card with; picked when AirDropping (`?for=`). */
+export type Audience = "recruiter" | "student";
+
 export interface ViewEvent {
   id: string;
   sessionId: string;
@@ -96,8 +99,48 @@ export interface ViewEvent {
   ms?: number;
   eventName?: string;
   conversationId?: string;
+  audience?: Audience;
   userAgent?: string;
   at: string;
+}
+
+export interface InsightItem {
+  target: string;
+  label: string;
+  /** Total time viewers spent here, across sessions. */
+  ms: number;
+  /** How many distinct viewers lingered here. */
+  sessions: number;
+}
+
+/** What recruiters looked at most on one card, folded from the event log. */
+export interface Insights {
+  views: number;
+  viewers: number;
+  totalMs: number;
+  avgMs: number;
+  topProjects: InsightItem[];
+  topSections: InsightItem[];
+  topClicks: { target: string; label: string; count: number }[];
+  openedVia: { label: string; count: number }[];
+  audience: { recruiter: number; student: number; unknown: number };
+  lastViewedAt?: string;
+}
+
+/** One person in the owner's network, folded from every conversation with them. */
+export interface Contact {
+  id: string;
+  name: string;
+  company: string;
+  role: string;
+  email: string;
+  events: string[];
+  firstMetAt: string;
+  lastMetAt: string;
+  conversationIds: string[];
+  latestConversationId: string;
+  followUp?: { status: "draft" | "sent"; sendOn: string };
+  notes: string;
 }
 
 export interface RecruiterInfo {

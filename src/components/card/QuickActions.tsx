@@ -13,11 +13,13 @@ const tile =
 
 export function QuickActions({ profile: p }: QuickActionsProps) {
   const [copied, setCopied] = useState(false);
-  const links: { label: string; href: string; icon: IconName; external?: boolean }[] = [
-    { label: "Call", href: `tel:${p.contact.phone}`, icon: "phone" },
-    { label: "Email", href: `mailto:${p.contact.email}`, icon: "mail" },
+  // Only offer what the owner actually has; a blank phone would make a dead tel: link.
+  const all: { label: string; href: string; icon: IconName; external?: boolean }[] = [
+    { label: "Call", href: `tel:${p.contact.phone.replace(/[^\d+]/g, "")}`, icon: "phone" },
+    { label: "Email", href: `mailto:${p.contact.email.trim()}`, icon: "mail" },
     { label: "LinkedIn", href: p.contact.linkedin, icon: "linkedin", external: true },
   ];
+  const links = all.filter((a) => a.href.split(":").slice(1).join(":").trim() !== "" && !a.href.endsWith("undefined"));
 
   async function share() {
     const url = `${window.location.origin}/c/${p.slug}`;

@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { OwnerTabBar } from "@/components/ui/OwnerTabBar";
 import { ConversationRow } from "@/components/activity/ConversationRow";
+import { InsightsPanel } from "@/components/activity/InsightsPanel";
 import { SessionCard } from "@/components/activity/SessionCard";
+import { computeInsights } from "@/lib/insights";
 import { redirect } from "next/navigation";
 import { listConversations } from "@/lib/conversations-store";
 import { listEvents } from "@/lib/events-store";
@@ -45,6 +47,8 @@ export default async function ActivityPage() {
       </header>
 
       {error && <p className="rounded-xl bg-scarlet-tint p-4 text-sm text-scarlet-bright">Couldn&apos;t read your activity.</p>}
+
+      {events.length > 0 && <InsightsPanel insights={computeInsights(events)} />}
 
       <h2 className="mt-2 font-display text-2xl font-semibold tracking-tight">Conversations</h2>
       {ordered.length === 0 ? (

@@ -72,6 +72,11 @@ export default function ShareScreen() {
       </View>
 
       <ShareBlock url={cardUrl} name={`${profile.firstName} ${profile.lastName}`} />
+      {profile.contact && (
+        <Text style={s.small}>
+          Call and Email on your card go to {[profile.contact.phone, profile.contact.email].filter(Boolean).join(" and ") || "nothing yet: rebuild with a resume that lists them"}.
+        </Text>
+      )}
 
       <Label>At the booth</Label>
       <Field label="Where are you?" value={eventName} onChangeText={updateEvent} placeholder="e.g. OSU Engineering Career Fair" />

@@ -7,6 +7,7 @@ import { Icon, type IconName } from "./Icon";
 const TABS: { label: string; href: string; icon: IconName; match: (p: string) => boolean }[] = [
   { label: "Share", href: "/", icon: "qr", match: (p) => p === "/" },
   { label: "Activity", href: "/activity", icon: "activity", match: (p) => p.startsWith("/activity") || p.startsWith("/conversations") },
+  { label: "Network", href: "/network", icon: "people", match: (p) => p.startsWith("/network") },
 ];
 
 /** iOS-style bottom tab bar for the owner screens. */
