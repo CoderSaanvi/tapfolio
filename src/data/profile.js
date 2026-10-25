@@ -82,7 +82,7 @@ export const kaushik = {
         { value: "50%", label: "Less manual entry" },
         { value: "25", label: "Users" },
       ],
-      tags: ["Next.js", "TypeScript", "Supabase", "AI APIs"],
+      tags: ["Next.js", "JavaScript", "Supabase", "AI APIs"],
     },
     {
       id: "brain-tumor",
@@ -155,7 +155,7 @@ export const kaushik = {
       blurb: "Learns your usage loops and steps in before they repeat.",
       where: "Web engine + native iOS app",
       summary: ["Learns your own usage patterns and steps in when it sees a known loop repeating."],
-      tags: ["TypeScript", "iOS"],
+      tags: ["JavaScript", "iOS"],
       links: [{ label: "View on GitHub", href: "https://github.com/kaushikburra9/behavioral-os" }],
     },
   ],
@@ -228,7 +228,7 @@ export const kaushik = {
       items: [
         "Python",
         "JavaScript",
-        "TypeScript",
+        "JavaScript",
         "SQL",
         "HTML/CSS",
         "React",
