@@ -40,6 +40,8 @@ function experience(items: ProfileDraft["experience"]["work"], school: string): 
       org: clean(e.org),
       context: orUndefined(e.context),
       bullets: e.bullets.map(clean).filter(Boolean),
+      summary: orUndefined(e.summary),
+      metrics: e.metrics.length ? e.metrics : undefined,
       badge: orUndefined(e.badge),
       ...((OSU.test(e.org) || (e.atSchool && OSU.test(school))) ? { logo: OSU_LOGO } : { mark: initials(e.org) }),
     }));

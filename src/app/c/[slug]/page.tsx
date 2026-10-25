@@ -49,13 +49,11 @@ export default async function CardPage({ params, searchParams }: CardPageProps) 
   if (!p) notFound();
   const audience = searchParams?.for;
   const note = audienceNote(audience, p);
-  // Recruiters get the resume right after the intro; students get projects first.
+  // Projects lead everywhere; recruiters get the resume right after experience, students get skills.
   const sections =
     audience === "student"
       ? [<ProjectGrid key="projects" projects={p.projects} />, <ExperienceSection key="work" experience={p.experience} />, <SkillsSection key="skills" skills={p.skills} />, <EducationSection key="edu" profile={p} />, <ResumeSection key="resume" profile={p} />]
-      : audience === "recruiter"
-        ? [<ExperienceSection key="work" experience={p.experience} />, <ResumeSection key="resume" profile={p} />, <ProjectGrid key="projects" projects={p.projects} />, <EducationSection key="edu" profile={p} />, <SkillsSection key="skills" skills={p.skills} />]
-        : [<ExperienceSection key="work" experience={p.experience} />, <ProjectGrid key="projects" projects={p.projects} />, <ResumeSection key="resume" profile={p} />, <EducationSection key="edu" profile={p} />, <SkillsSection key="skills" skills={p.skills} />];
+      : [<ProjectGrid key="projects" projects={p.projects} />, <ExperienceSection key="work" experience={p.experience} />, <ResumeSection key="resume" profile={p} />, <EducationSection key="edu" profile={p} />, <SkillsSection key="skills" skills={p.skills} />];
 
   return (
     <>

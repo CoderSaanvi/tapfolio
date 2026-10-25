@@ -25,6 +25,8 @@ export interface Profile {
   photo: string;
   projects: Project[];
   contact?: { phone: string; email: string; linkedin: string; github: string };
+  school?: { name: string; unit: string; year: string };
+  banner?: { text: string; logo?: string };
 }
 
 export type Audience = "recruiter" | "student";

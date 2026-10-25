@@ -28,9 +28,12 @@ export default function Activity() {
     }
   }, []);
 
+  // Refresh on open and every 15 s while this tab is showing, so a scan at the booth shows up without a pull.
   useFocusEffect(
     useCallback(() => {
       void load();
+      const t = setInterval(() => void load(), 15_000);
+      return () => clearInterval(t);
     }, [load]),
   );
 
@@ -41,7 +44,7 @@ export default function Activity() {
       refreshControl={<RefreshControl refreshing={refreshing} tintColor={C.ink2} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} />}
     >
       <H1>Activity</H1>
-      <Sub>What people look at on your card, plus your conversations and follow-ups.</Sub>
+      <Sub>Who's looked at your card and what held them. Updates by itself.</Sub>
       <ErrorText>{error}</ErrorText>
       {insights && insights.views > 0 && <InsightsPanel insights={insights} />}
       <Text style={s.section}>Conversations</Text>

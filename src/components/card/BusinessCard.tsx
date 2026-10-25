@@ -9,10 +9,24 @@ interface BusinessCardProps {
   profile: Profile;
 }
 
+/** School (or whatever the owner typed) across the top of the card, with the logo when we have one. */
+function CardBanner({ profile: p }: BusinessCardProps) {
+  const banner = p.banner ?? { text: p.school.name };
+  if (!banner.text.trim()) return null;
+  const { logo, mark } = banner.logo ? { logo: banner.logo, mark: undefined } : schoolLogo(banner.text);
+  return (
+    <div className="flex items-center gap-3 border-b border-line bg-white/[0.04] px-5 py-3">
+      <LogoTile logo={logo} mark={mark} size="sm" />
+      <span className="truncate font-serif text-[17px] tracking-wide text-ink [font-variant:small-caps]">{banner.text}</span>
+    </div>
+  );
+}
+
 /** The first thing a recruiter sees after the tap: who you are, save/contact, and links to everything. */
 export function BusinessCard({ profile: p }: BusinessCardProps) {
   return (
     <div id="card" className="relative w-full overflow-hidden rounded-[28px] border border-line border-t-[3px] border-t-scarlet bg-card shadow-card">
+      <CardBanner profile={p} />
       <div className="relative aspect-[5/4] overflow-hidden">
         <Image src={p.photo} alt={p.fullName} fill priority sizes="(max-width: 1024px) 100vw, 420px" className="object-cover object-[50%_30%]" />
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-card" />
