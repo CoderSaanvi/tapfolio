@@ -1,0 +1,240 @@
+import "server-only";
+import Anthropic from "@anthropic-ai/sdk";
+import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
+import { z } from "zod";
+import { ProfileDraftSchema } from "./profile-schema";
+import { formatDuration } from "./time";
+
+const ExperienceSummariesSchema = z.object({
+  items: z.array(
+    z.object({
+      title: z.string().describe("Copied exactly from the input"),
+      summary: z
+        .string()
+        .describe("Exactly two sentences, first person, on what the role amounted to: what they built or owned and the outcome. No bullet symbols."),
+      metrics: z
+        .array(z.object({ value: z.string(), label: z.string() }))
+        .describe("Up to 3 numbers stated in the bullets (value '40%', label 'faster order lookup'). Empty if there are none."),
+    }),
+  ),
+});
+
+/**
+ * Two-sentence summaries plus any stated numbers for experience items built
+ * before summaries existed. Uses only the bullets already on the card.
+ */
+export async function summarizeExperience(items) {
+  const client = new Anthropic();
+  const response = await client.beta.messages.parse({
+    model: MODEL,
+    max_tokens: 4000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "low", format: betaZodOutputFormat(ExperienceSummariesSchema) },
+    system:
+      "You condense a student's resume experience entries for their recruiting card. Use only the facts given; never invent numbers, employers, or outcomes. Numbers go in metrics only when they appear in the bullets.",
+    messages: [
+      {
+        role: "user",
+        content: `Summarize each role.\n\n${JSON.stringify(
+          items.map((e) => ({ title: e.title, org: e.org, context: e.context ?? "", bullets: e.bullets })),
+          null,
+          2,
+        )}`,
+      },
+    ],
+  });
+  const out = new Map();
+  if (response.stop_reason === "refusal" || !response.parsed_output) return out;
+  for (const it of response.parsed_output.items) {
+    if (it.summary.trim()) out.set(it.title, { summary: it.summary.trim(), metrics: it.metrics.filter((m) => m.value.trim()).slice(0, 3) });
+  }
+  return out;
+}
+
+const MODEL = "claude-opus-5-5";
+
+const DraftSchema = z.object({
+  recruiter: z.object({
+    name: z.string().describe("Recruiter's full name if said in the conversation, else empty string"),
+    company: z.string().describe("Their company, else empty string"),
+    role: z.string().describe("Their job title, else empty string"),
+    email: z.string().describe("Their email if spelled out, else empty string"),
+  }),
+  subject: z.string(),
+  body: z.string().describe("Plain-text email body, no markdown"),
+  sendAfterDays: z.number().describe("Days after the conversation to send: 1, 2 or 3"),
+  highlights: z.array(z.string()).describe("2-4 short notes for the student on why the email says what it says"),
+});
+
+const SYSTEM = `You write follow-up emails from a college student to a recruiter they just met in person at a recruiting event.
+
+During the conversation the student tapped phones with the recruiter to share a live portfolio card, and the student's phone recorded the conversation. You get the student's profile, a speech-to-text transcript (noisy, both speakers mixed, no speaker labels), the student's own notes, and what the recruiter looked at on the card afterwards.
+
+How to write it:
+- 90 to 150 words, warm and specific, in the student's voice. Plain text, no markdown.
+- Open with one concrete thing from the conversation, so the recruiter instantly remembers who this is.
+- Connect it to the one or two projects most relevant to what the recruiter cared about. Use the viewing activity to decide which projects to emphasize.
+- The viewing activity is private to the student. Never mention or hint that the student knows what the recruiter viewed, clicked, or how long they spent.
+- Only state facts that appear in the inputs. If the transcript is thin, keep the email short and general rather than inventing details.
+- If they discussed a next step (apply to a role, send a resume, schedule a call), close on that. Otherwise end with one small, easy ask.
+- Greet by first name if known, else "Hi there,". Sign off with the student's first name, then the portfolio link on its own line.`;
+
+function activityText(sessions) {
+  if (sessions.length === 0) return "The recruiter has not opened the card yet.";
+  return sessions
+    .map((s, i) => {
+      const sections = s.sections.map((sec) => `${sec.label} (${formatDuration(sec.ms)})`).join("; ") || "none";
+      const clicks = s.clicks.map((c) => c.label).join("; ") || "none";
+      return `Visit ${i + 1} on ${s.device}: time per section: ${sections}. Actions: ${clicks}.`;
+    })
+    .join("\n");
+}
+
+function profileText(p) {
+  const projects = p.projects.map((pr) => `- ${pr.title} (${pr.where}): ${pr.summary.join(" ")}`).join("\n");
+  return `${p.fullName} (goes by ${p.firstName}), ${p.title} at ${p.school.name}. ${p.bio}\n\nProjects:\n${projects}`;
+}
+
+function sendDate(fromIso, days) {
+  const d = new Date(fromIso);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0, 10);
+}
+
+/** Used when there's no API key, the call fails, or Claude declines. Keeps the app working. */
+function templateDraft({ profile: p, conversation: c, sessions, cardUrl }) {
+  const top = sessions.flatMap((s) => s.sections).sort((a, b) => b.ms - a.ms)[0];
+  const project = p.projects.find((pr) => top?.target === `project-${pr.id}` || top?.target === `project:${pr.id}`) ?? p.projects[0];
+  const name = c.recruiter.name.split(" ")[0];
+  const where = c.eventName ? ` at ${c.eventName}` : "";
+  const body = `${name ? `Hi ${name},` : "Hi there,"}
+
+Thank you for taking the time to talk with me${where}. I enjoyed our conversation and learning more about your team${c.recruiter.company ? ` at ${c.recruiter.company}` : ""}.
+
+I wanted to share a bit more about ${project.title}, which I mentioned while we talked: ${project.summary[0]}
+
+I'd love to stay in touch and hear about any roles that might be a fit. Please let me know if there's anything else I can send your way.
+
+Best,
+${p.firstName}
+${cardUrl}`;
+  return {
+    recruiter: {},
+    followUp: {
+      subject: `Great meeting you${where}`,
+      body,
+      sendOn: sendDate(c.endedAt ?? c.startedAt, 2),
+      highlights: ["Template draft: add a Claude API key for a draft tailored to the conversation."],
+      source: "template",
+      status: "draft",
+      generatedAt: new Date().toISOString(),
+    },
+  };
+}
+
+export async function draftFollowUp(input) {
+  const { profile, conversation: c, sessions, cardUrl } = input;
+  try {
+    const client = new Anthropic();
+    const response = await client.beta.messages.parse({
+      model: MODEL,
+      max_tokens: 16000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      output_config: { effort: "medium", format: betaZodOutputFormat(DraftSchema) },
+      system: SYSTEM,
+      messages: [
+        {
+          role: "user",
+          content: `<profile>\n${profileText(profile)}\n</profile>
+
+<event>${c.eventName || "Unknown event"}, ${new Date(c.startedAt).toDateString()}</event>
+
+<known_recruiter_details>${JSON.stringify(c.recruiter)}</known_recruiter_details>
+
+<transcript>\n${c.transcript.trim() || "(no transcript recorded)"}\n</transcript>
+
+<student_notes>\n${c.notes.trim() || "(none)"}\n</student_notes>
+
+<recruiter_card_activity>\n${activityText(sessions)}\n</recruiter_card_activity>
+
+<portfolio_link>${cardUrl}</portfolio_link>`,
+        },
+      ],
+    });
+
+    const draft = response.parsed_output;
+    if (response.stop_reason === "refusal" || !draft) return templateDraft(input);
+
+    const days = Math.min(3, Math.max(1, Math.round(draft.sendAfterDays)));
+    const recruiter = Object.fromEntries(Object.entries(draft.recruiter).filter(([, v]) => v.trim() !== ""));
+    return {
+      recruiter,
+      followUp: {
+        subject: draft.subject.trim(),
+        body: draft.body.trim(),
+        sendOn: sendDate(c.endedAt ?? c.startedAt, days),
+        highlights: draft.highlights.slice(0, 4),
+        source: "ai",
+        status: "draft",
+        generatedAt: new Date().toISOString(),
+      },
+    };
+  } catch {
+    // Missing key, network, rate limit, or a malformed response: fall back so the app keeps working.
+    return templateDraft(input);
+  }
+}
+
+const BUILD_SYSTEM = `You turn a college student's resume into the content of their recruiting portfolio: a contact card plus a one-page portfolio with projects, experience, education, and skills.
+
+Rules:
+- Use only facts from the resume and the student's answers. Never invent employers, dates, numbers, awards, or links. If something isn't there, leave it empty.
+- Write in the student's voice (first person) for the bio and degree paragraphs: confident, specific, no buzzwords, no exaggeration.
+- Aim the bio, headline, and the order of projects at the roles the student says they want.
+- Projects: take them from the resume's projects, research, and the concrete things built at jobs. Put the strongest and most relevant first. If the student says what they're building right now, mark that project isCurrent (create it from their answer if it isn't on the resume, using only what they wrote).
+- Metrics only when the resume states the number.
+- Experience: jobs, internships, and research go in work; clubs, leadership, teams, and activities go in leadership. Most recent first. Each gets a two-sentence summary and, only when the resume states numbers for that role, up to 3 metrics.
+- Facts: GPA and test scores exactly as written; honors and scholarships as wide facts.
+- Keep blurbs under 90 characters and bullets to one line each where possible.`;
+
+/** Reads a resume PDF (plus onboarding answers) and drafts the whole portfolio. Throws if Claude can't produce one. */
+export async function buildProfileDraft(resumePdfBase64, answers) {
+  const client = new Anthropic();
+  const response = await client.beta.messages.parse({
+    model: MODEL,
+    max_tokens: 16000,
+    betas: ["server-side-fallback-2026-07-01"],
+    fallbacks: "default",
+    output_config: { effort: "medium", format: betaZodOutputFormat(ProfileDraftSchema) },
+    system: BUILD_SYSTEM,
+    messages: [
+      {
+        role: "user",
+        content: [
+          { type: "document", source: { type: "base64", media_type: "application/pdf", data: resumePdfBase64 } },
+          {
+            type: "text",
+            text: `Build my portfolio from the resume above.
+
+<my_answers>
+Name to show on my card: ${answers.displayName || "(use resume)"}
+Roles I'm looking for: ${answers.targetRoles || "(not given)"}
+What I'm building right now: ${answers.building || "(not given)"}
+Line I want recruiters to remember: ${answers.tagline || "(not given)"}
+Email: ${answers.email || "(use resume)"}
+Phone: ${answers.phone || "(use resume)"}
+LinkedIn: ${answers.linkedin || "(use resume)"}
+GitHub: ${answers.github || "(use resume)"}
+</my_answers>`,
+          },
+        ],
+      },
+    ],
+  });
+  if (response.stop_reason === "refusal" || !response.parsed_output) {
+    throw new Error("Claude could not build a portfolio from this resume");
+  }
+  return response.parsed_output;
+}

@@ -15,7 +15,7 @@ The recruiter page is built for phones: the contact card comes first, and the ca
 
 ## Onboarding: Claude builds your card
 
-The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.ts`) and fills in the whole card and portfolio in this format, usually in under a minute. Onboarding also asks for the name to show on the card and pronouns (blank = the resume's name). After the build, an optional **Project demos** step lists the projects Claude found so you can attach demo videos, photos, or a demo link to each; it's also on the share screen for later. Recruiters see a **▶ Demo** tag and can play videos inline (the file server supports range requests, which iPhone Safari needs), and plays are recorded for the follow-up.
+The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.js`) and fills in the whole card and portfolio in this format, usually in under a minute. Onboarding also asks for the name to show on the card and pronouns (blank = the resume's name). After the build, an optional **Project demos** step lists the projects Claude found so you can attach demo videos, photos, or a demo link to each; it's also on the share screen for later. Recruiters see a **▶ Demo** tag and can play videos inline (the file server supports range requests, which iPhone Safari needs), and plays are recorded for the follow-up.
 
 The phone is remembered as the card's owner (a cookie), so it opens straight to the share screen after that. "Rebuild my card" at the bottom of the share screen starts over with a new resume.
 
@@ -30,7 +30,7 @@ Open the app in Safari, tap **Share → Add to Home Screen**. It opens full-scre
 1. Walk up to a recruiter, tap **Start conversation** (ask before recording). The phone transcribes live using the browser's built-in speech recognition.
 2. **Tap to share.** The link carries the conversation's id, so whatever they look at on your card is attached to this conversation.
 3. Tap **End & review**. Fix the transcript if the mic misheard, then **Draft follow-up**.
-4. Claude (`src/lib/ai.ts`) reads the transcript, your notes, and their card activity, fills in their name/company/email, and drafts a 90–150 word email scheduled 1–3 days out. It uses what they viewed to pick which projects to emphasize, but never mentions that you saw it.
+4. Claude (`src/lib/ai.js`) reads the transcript, your notes, and their card activity, fills in their name/company/email, and drafts a 90–150 word email scheduled 1–3 days out. It uses what they viewed to pick which projects to emphasize, but never mentions that you saw it.
 5. On the send date the conversation shows **Due today** in Activity. Tap **Open in Mail** to send it from your own email. Nothing is sent automatically.
 
 Without a working `ANTHROPIC_API_KEY`, drafting falls back to a plain template so the app still works.
@@ -43,7 +43,7 @@ npm run dev          # http://localhost:3800
 npm run dev:phone    # reachable from your phone on the same Wi-Fi: http://<your-mac-ip>:3800
 ```
 
-Edit your content in `src/data/profile.ts`. Images and the resume live in `public/`.
+Edit your content in `src/data/profile.js`. Images and the resume live in `public/`.
 
 The microphone only works on `localhost` or HTTPS. Over plain `http://<ip>:3800` on your phone, the card and sharing work but live transcription won't; deploy, or use an HTTPS tunnel, to record on the phone.
 
@@ -67,6 +67,6 @@ Apply every file in `supabase/migrations/` to the project (SQL editor, in order)
 
 ## Storage and accounts
 
-With Supabase configured, profiles, conversations, card views, and visitors live in Postgres (schema in `supabase/migrations/`; every query goes through `src/lib/supabase.ts`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
+With Supabase configured, profiles, conversations, card views, and visitors live in Postgres (schema in `supabase/migrations/`; every query goes through `src/lib/supabase.js`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
 
 Each card has an owner: onboarding returns a secret token, kept in an httpOnly cookie on the web and sent as `Authorization: Bearer` by the mobile app. Owner-only routes (conversations, follow-ups, demos, Activity) check it; only its SHA-256 hash is stored.
