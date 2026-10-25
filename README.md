@@ -55,8 +55,18 @@ Copy `.env.local.example` to `.env.local`.
 - `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`: store everything in Supabase. Without them the app uses `.data/` on this machine.
 - `GITHUB_TOKEN`: raises the GitHub rate limit for the "Building right now" feed.
 
+## Deploying (Vercel)
+
+Vercel's filesystem is read-only, so the `.data/` fallback does not work there: without Supabase, onboarding fails at the photo/resume upload. The hosted app needs these environment variables (Project → Settings → Environment Variables, then redeploy):
+
+- `ANTHROPIC_API_KEY`
+- `NEXT_PUBLIC_SUPABASE_URL`: the project's API URL (Supabase → Project Settings → API).
+- `SUPABASE_SERVICE_ROLE_KEY`: the `service_role` secret from the same page. Server-only; never expose it to the browser or the app.
+
+Apply every file in `supabase/migrations/` to the project (SQL editor, in order). They create the tables, turn on RLS, and create the `uploads` bucket.
+
 ## Storage and accounts
 
-With Supabase configured, profiles, conversations, and card views live in Postgres (schema in `supabase/migrations/0001_tapfolio_init.sql`; every query goes through `src/lib/supabase.ts`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
+With Supabase configured, profiles, conversations, card views, and visitors live in Postgres (schema in `supabase/migrations/`; every query goes through `src/lib/supabase.ts`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
 
 Each card has an owner: onboarding returns a secret token, kept in an httpOnly cookie on the web and sent as `Authorization: Bearer` by the mobile app. Owner-only routes (conversations, follow-ups, demos, Activity) check it; only its SHA-256 hash is stored.

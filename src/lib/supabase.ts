@@ -101,6 +101,7 @@ export async function sbInsertEvent(e: ViewEvent): Promise<void> {
       label: e.label,
       ms: e.ms ?? null,
       event_name: e.eventName ?? null,
+      audience: e.audience ?? null,
       user_agent: e.userAgent ?? null,
       at: e.at,
     }),
@@ -117,6 +118,7 @@ interface EventRow {
   label: string;
   ms: number | null;
   event_name: string | null;
+  audience: ViewEvent["audience"] | null;
   user_agent: string | null;
   at: string;
 }
@@ -133,6 +135,7 @@ export async function sbListEvents(slug: string): Promise<ViewEvent[]> {
     label: r.label,
     ms: r.ms ?? undefined,
     eventName: r.event_name ?? undefined,
+    audience: r.audience ?? undefined,
     userAgent: r.user_agent ?? undefined,
     at: r.at,
   }));
