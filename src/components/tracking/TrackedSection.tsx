@@ -59,7 +59,7 @@ export function TrackedSection({ id, label, className, children }: TrackedSectio
   }, [id, label]);
 
   return (
-    <div ref={ref} className={className} data-section={id}>
+    <div ref={ref} id={id} className={className} data-section={id}>
       {children}
     </div>
   );

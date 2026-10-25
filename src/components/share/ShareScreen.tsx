@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { OwnerTabBar } from "@/components/ui/OwnerTabBar";
 import { ConversationRecorder } from "./ConversationRecorder";
 import { EventField } from "./EventField";
 import { QrCode } from "./QrCode";
@@ -11,9 +12,11 @@ import type { Profile } from "@/lib/types";
 
 interface ShareScreenProps {
   profile: Profile;
+  justBuilt?: boolean;
 }
 
-export function ShareScreen({ profile: p }: ShareScreenProps) {
+/** Home screen of the owner app: the QR and tap-to-share come first, everything else is below. */
+export function ShareScreen({ profile: p, justBuilt }: ShareScreenProps) {
   const [origin, setOrigin] = useState("");
   const [eventName, setEventName] = useState("");
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -31,40 +34,57 @@ export function ShareScreen({ profile: p }: ShareScreenProps) {
   const withSrc = (src: string) => (cardUrl ? `${cardUrl}${cardUrl.includes("?") ? "&" : "?"}src=${src}` : "");
 
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-5 bg-wash px-4 pb-10 pt-[max(20px,env(safe-area-inset-top))] font-sys">
-      <header className="flex items-center gap-3">
-        <div className="relative h-12 w-12 overflow-hidden rounded-full border-2 border-scarlet">
-          <Image src={p.photo} alt="" fill sizes="48px" className="object-cover object-top" />
+    <main className="mx-auto flex min-h-dvh max-w-md flex-col gap-4 px-4 pb-32 pt-[max(16px,env(safe-area-inset-top))]">
+      <header className="flex items-center gap-3 py-1">
+        <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-scarlet">
+          <Image src={p.photo} alt="" fill sizes="40px" className="object-cover object-top" />
         </div>
         <div className="leading-tight">
           <p className="font-semibold">{p.firstName} {p.lastName}</p>
-          <p className="text-xs text-ink-2">{conversationId ? "In a conversation" : "Ready to share"}</p>
+          <p className="flex items-center gap-1.5 text-xs text-ink-2">
+            <span className={`h-1.5 w-1.5 rounded-full ${conversationId ? "animate-pulse bg-scarlet-bright" : "bg-emerald-400"}`} />
+            {conversationId ? "In a conversation" : "Ready to share"}
+          </p>
         </div>
-        <Link href="/activity" className="ml-auto rounded-full border border-line bg-white px-3 py-1.5 text-xs font-semibold text-ink no-underline">
-          Activity
+        <Link href={`/c/${p.slug}`} className="ml-auto rounded-full border border-line bg-card px-3 py-1.5 text-xs font-medium text-ink no-underline">
+          Preview card
         </Link>
       </header>
 
+      {justBuilt && (
+        <Link href={`/c/${p.slug}`} className="flex items-center gap-3 rounded-2xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-ink no-underline">
+          <span className="text-lg">✓</span>
+          <span className="flex-1"><b className="font-semibold">Your Tapfolio is ready.</b> Take a look before you share it.</span>
+          <span className="text-emerald-400">Open ›</span>
+        </Link>
+      )}
+
+      <div className="rounded-[28px] border border-line border-t-[3px] border-t-scarlet bg-card p-5 shadow-card">
+        <div className="mx-auto w-full max-w-[260px] rounded-2xl bg-white p-4">{cardUrl && <QrCode value={withSrc("qr")} />}</div>
+        <p className="mt-3 text-center text-xs text-ink-2">Have them point their camera here</p>
+        <div className="mt-4">
+          <TapShareButton url={withSrc("tap")} title={`${p.firstName} ${p.lastName}`} />
+        </div>
+        <p className="mt-2.5 text-center text-[11.5px] leading-relaxed text-ink-2">
+          iPhone: choose <b className="font-medium text-ink">AirDrop</b> and hold your phones together. Android: <b className="font-medium text-ink">Quick Share</b>.
+        </p>
+      </div>
+
+      <p className="mt-2 px-1 font-mono text-[11px] uppercase tracking-[.14em] text-ink-2">At the booth</p>
       <EventField value={eventName} onChange={setEventName} />
       <ConversationRecorder slug={p.slug} eventName={eventName} onConversation={setConversationId} />
 
-      <TapShareButton url={withSrc("tap")} title={`${p.firstName} ${p.lastName}`} />
-      <p className="-mt-2 text-center text-xs leading-relaxed text-ink-2">
-        iPhone: tap, choose <b>AirDrop</b>, and hold the tops of your phones together. Android: choose <b>Quick Share</b>.
-      </p>
-
-      <div className="flex items-center gap-3 text-[10.5px] uppercase tracking-[.26em] text-ink-2 before:h-px before:flex-1 before:bg-line after:h-px after:flex-1 after:bg-line">
-        or scan
+      <div className="mt-4 flex flex-col gap-2">
+        <Link href="/onboarding/demos" className="flex items-center justify-between rounded-2xl border border-line bg-card px-4 py-3.5 text-sm text-ink no-underline">
+          <span><b className="font-medium">Project demos</b><span className="block text-xs text-ink-2">Add videos, photos, or links to your projects</span></span>
+          <span className="text-ink-2">›</span>
+        </Link>
+        <Link href="/onboarding" className="text-center text-xs text-ink-2 no-underline">
+          New resume? <span className="text-scarlet-bright">Rebuild my card</span>
+        </Link>
       </div>
 
-      <div className="rounded-3xl border border-line border-t-4 border-t-scarlet bg-white p-6 shadow-card">
-        <div className="mx-auto w-full max-w-[280px]">{cardUrl && <QrCode value={withSrc("qr")} />}</div>
-        <p className="mt-4 break-all text-center font-mono text-[11px] text-ink-2">{cardUrl}</p>
-      </div>
-
-      <Link href={`/c/${p.slug}`} className="text-center text-sm font-semibold text-scarlet">
-        Preview what they&apos;ll see →
-      </Link>
+      <OwnerTabBar />
     </main>
   );
 }

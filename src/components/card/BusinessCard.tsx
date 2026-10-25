@@ -1,66 +1,53 @@
 import Image from "next/image";
-import { Icon } from "@/components/ui/Icon";
-import { PlaceLinks } from "./PlaceLinks";
+import { LogoTile, schoolLogo } from "@/components/ui/LogoTile";
+import { ExploreLinks } from "./ExploreLinks";
 import { QuickActions } from "./QuickActions";
 import { SaveContactButton } from "./SaveContactButton";
-import { ShareLinkButton } from "./ShareLinkButton";
 import type { Profile } from "@/lib/types";
 
 interface BusinessCardProps {
   profile: Profile;
 }
 
+/** The first thing a recruiter sees after the tap: who you are, save/contact, and links to everything. */
 export function BusinessCard({ profile: p }: BusinessCardProps) {
   return (
-    <div className="relative w-full max-w-[420px] overflow-hidden rounded-3xl border border-line border-t-4 border-t-scarlet bg-white px-[26px] pb-[26px] font-sys shadow-card">
-      <div className="relative -mx-[26px] mb-5 aspect-[4/5] overflow-hidden bg-white">
-        <Image src={p.photo} alt={p.fullName} fill priority sizes="420px" className="object-cover object-[50%_25%]" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-b from-transparent from-70% to-white" />
+    <div id="card" className="relative w-full overflow-hidden rounded-[28px] border border-line border-t-[3px] border-t-scarlet bg-card shadow-card">
+      <div className="relative aspect-[5/4] overflow-hidden">
+        <Image src={p.photo} alt={p.fullName} fill priority sizes="(max-width: 1024px) 100vw, 420px" className="object-cover object-[50%_30%]" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-b from-transparent to-card" />
+        {p.location && <span className="absolute left-4 top-[max(16px,env(safe-area-inset-top))] rounded-full border border-white/15 bg-black/40 px-3 py-1 font-mono text-[10.5px] uppercase tracking-[.18em] text-white/90 backdrop-blur">
+          {p.location}
+        </span>}
       </div>
 
-      <p className="mb-[18px] text-center text-[11px] uppercase tracking-[.32em] text-ink-2">{p.location} · Let&apos;s connect</p>
-      <h1 className="mb-2.5 text-center text-4xl font-bold leading-[1.06] tracking-[-.02em] text-ink">
-        {p.firstName} {p.lastName}
-      </h1>
-      <p className="mx-auto mb-6 max-w-[34ch] text-center text-[13.5px] leading-normal text-ink-2">
-        <b className="font-semibold text-ink">{p.title}</b>
-        <br />
-        {p.focus}
-      </p>
-
-      <div className="-mt-2 mb-[22px] flex justify-center">
-        <div className="flex flex-col text-left text-[#666]">
-          <span className="border-b border-current pb-1 font-serif text-lg leading-tight tracking-[.02em] [font-variant:small-caps]">
-            {p.school.name}
-          </span>
-          <span className="pt-1 text-[10.5px] uppercase tracking-[.06em]">
-            {p.school.unit} · {p.school.year}
-          </span>
+      <div className="relative -mt-14 flex flex-col gap-5 px-5 pb-5">
+        <div>
+          <h1 className="font-sora text-[34px] font-semibold leading-[1.05] tracking-tight">
+            {p.firstName} {p.lastName}
+            {p.pronouns && <span className="ml-2 align-middle font-mono text-xs font-normal tracking-normal text-ink-2">{p.pronouns}</span>}
+          </h1>
+          <p className="mt-1.5 text-sm text-ink-2">{p.headline}</p>
         </div>
-      </div>
 
-      <SaveContactButton profile={p} />
-      <a
-        href={p.contact.linkedin}
-        target="_blank"
-        rel="noopener"
-        data-track="cta:linkedin"
-        data-label="Opened LinkedIn (main button)"
-        className="mt-2 flex items-center justify-center gap-2.5 rounded-2xl border-[1.5px] border-scarlet px-4 py-3.5 text-[14.5px] font-semibold text-scarlet no-underline hover:bg-scarlet/5"
-      >
-        <Icon name="linkedin" />
-        <span>Let&apos;s Connect on LinkedIn!</span>
-      </a>
-      <div className="mt-2">
-        <ShareLinkButton title={`${p.firstName} ${p.lastName}`} path={`/c/${p.slug}`} />
-      </div>
-      <QuickActions contact={p.contact} />
+        <div className="flex items-center gap-3">
+          <LogoTile {...schoolLogo(p.school.name)} size="sm" />
+          <div className="flex flex-col leading-tight">
+            <span className="font-serif text-[15px] text-ink [font-variant:small-caps]">{p.school.name}</span>
+            <span className="text-[11px] uppercase tracking-[.08em] text-ink-2">
+              {p.school.unit} · {p.school.year}
+            </span>
+          </div>
+        </div>
 
-      <div className="my-[14px] mt-6 flex items-center gap-3 text-[10.5px] uppercase tracking-[.26em] text-ink-2 opacity-70 before:h-px before:flex-1 before:bg-line-soft after:h-px after:flex-1 after:bg-line-soft">
-        Find me
+        <div className="flex flex-col gap-2">
+          <SaveContactButton profile={p} />
+          <QuickActions profile={p} />
+        </div>
+
+        <ExploreLinks profile={p} />
+        <p className="text-center text-[11px] tracking-wide text-ink-2">{p.tagline}</p>
       </div>
-      <PlaceLinks places={p.places} />
-      <footer className="mt-6 text-center text-[11px] tracking-wide text-ink-2">{p.tagline}</footer>
     </div>
   );
 }

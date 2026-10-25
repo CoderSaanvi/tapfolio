@@ -11,6 +11,20 @@ Tap-to-share contact card that opens a live portfolio, and logs what each recrui
 
 Nothing has to be installed on the recruiter's phone. AirDrop / Quick Share / the camera all open the card in their browser.
 
+The recruiter page is built for phones: the contact card comes first, and the card's "Explore" list links to every section (projects, experience, resume, education, skills). A floating "Contact card" button brings them back to it.
+
+## Onboarding: Claude builds your card
+
+The first time a phone opens the app it goes to `/onboarding`: add a photo and a resume PDF, answer a few optional questions (roles you want, what you're building, links), and tap **Build my Tapfolio**. Claude reads the resume (`buildProfileDraft` in `src/lib/ai.ts`) and fills in the whole card and portfolio in this format, usually in under a minute. Onboarding also asks for the name to show on the card and pronouns (blank = the resume's name). After the build, an optional **Project demos** step lists the projects Claude found so you can attach demo videos, photos, or a demo link to each; it's also on the share screen for later. Recruiters see a **▶ Demo** tag and can play videos inline (the file server supports range requests, which iPhone Safari needs), and plays are recorded for the follow-up.
+
+The phone is remembered as the card's owner (a cookie), so it opens straight to the share screen after that. "Rebuild my card" at the bottom of the share screen starts over with a new resume.
+
+Built profiles live in `.data/profiles.json`, and uploaded photos and resumes in `.data/uploads/`. The hand-written example stays at `/c/kaushik`.
+
+## Install on your iPhone
+
+Open the app in Safari, tap **Share → Add to Home Screen**. It opens full-screen from its own icon, straight to the QR and **Tap to share**, with a bottom tab bar for Share and Activity.
+
 ## The follow-up flow
 
 1. Walk up to a recruiter, tap **Start conversation** (ask before recording). The phone transcribes live using the browser's built-in speech recognition.
@@ -37,10 +51,12 @@ The microphone only works on `localhost` or HTTPS. Over plain `http://<ip>:3800`
 
 Copy `.env.local.example` to `.env.local`.
 
-- `ANTHROPIC_API_KEY`: needed for Claude-drafted follow-ups.
-- `OWNER_PASSWORD`: puts `/` and `/activity` behind a password. Recruiter pages stay public.
+- `ANTHROPIC_API_KEY`: needed for building cards and drafting follow-ups.
+- `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`: store everything in Supabase. Without them the app uses `.data/` on this machine.
 - `GITHUB_TOKEN`: raises the GitHub rate limit for the "Building right now" feed.
 
-## Before deploying
+## Storage and accounts
 
-Views and conversations are stored in `.data/*.json` (`src/lib/json-store.ts`), which works locally but not on Vercel (read-only filesystem). Swap that store for Supabase before deploying.
+With Supabase configured, profiles, conversations, and card views live in Postgres (schema in `supabase/migrations/0001_tapfolio_init.sql`; every query goes through `src/lib/supabase.ts`), and photos, resumes, and demo videos in the public `uploads` bucket. Uploads go straight from the phone to storage through one-time signed URLs (`/api/uploads`), so large videos never pass through the server.
+
+Each card has an owner: onboarding returns a secret token, kept in an httpOnly cookie on the web and sent as `Authorization: Bearer` by the mobile app. Owner-only routes (conversations, follow-ups, demos, Activity) check it; only its SHA-256 hash is stored.

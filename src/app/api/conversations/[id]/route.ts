@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { updateConversation } from "@/lib/conversations-store";
+import { getOwnedConversation, updateConversation } from "@/lib/conversations-store";
+import { listEvents } from "@/lib/events-store";
+import { eventsForConversation, summarizeSessions } from "@/lib/sessions";
 
 const PatchSchema = z.object({
   eventName: z.string().max(120).optional(),
@@ -32,9 +34,10 @@ interface RouteContext {
   params: { id: string };
 }
 
-/** Owner-only (middleware). Saves transcript/notes, ends the conversation, edits the draft, or soft-deletes. */
+/** Owner-only. Saves transcript/notes, ends the conversation, edits the draft, or soft-deletes. */
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   try {
+    if (!(await getOwnedConversation(params.id))) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
     const parsed = PatchSchema.safeParse(await req.json());
     if (!parsed.success) return NextResponse.json({ success: false, error: "Invalid update" }, { status: 400 });
     const { end, recruiter, followUp, delete: remove, ...fields } = parsed.data;
@@ -59,5 +62,17 @@ export async function PATCH(req: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ success: true, data: updated });
   } catch {
     return NextResponse.json({ success: false, error: "Could not save conversation" }, { status: 500 });
+  }
+}
+
+/** Owner-only. One conversation plus a summary of the card views linked to it (the app's conversation screen). */
+export async function GET(_req: NextRequest, { params }: RouteContext) {
+  try {
+    const owned = await getOwnedConversation(params.id);
+    if (!owned) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
+    const sessions = summarizeSessions(eventsForConversation(await listEvents(owned.convo.slug), owned.convo));
+    return NextResponse.json({ success: true, data: { conversation: owned.convo, sessions } });
+  } catch {
+    return NextResponse.json({ success: false, error: "Could not load conversation" }, { status: 500 });
   }
 }

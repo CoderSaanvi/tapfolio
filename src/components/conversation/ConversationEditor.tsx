@@ -41,7 +41,7 @@ export function ConversationEditor({ initial }: ConversationEditorProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      {status && <p className="rounded-xl bg-scarlet-tint p-3 text-sm text-scarlet-deep">{status}</p>}
+      {status && <p className="rounded-xl bg-scarlet-tint p-3 text-sm text-scarlet-bright">{status}</p>}
       <FollowUpPanel
         followUp={convo.followUp}
         email={convo.recruiter.email}

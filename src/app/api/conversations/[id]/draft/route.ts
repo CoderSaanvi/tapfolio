@@ -1,22 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { getProfile } from "@/data/profile";
 import { draftFollowUp } from "@/lib/ai";
-import { getConversation, updateConversation } from "@/lib/conversations-store";
+import { getOwnedConversation, updateConversation } from "@/lib/conversations-store";
 import { listEvents } from "@/lib/events-store";
-import { summarizeSessions } from "@/lib/sessions";
+import { eventsForConversation, summarizeSessions } from "@/lib/sessions";
 
 interface RouteContext {
   params: { id: string };
 }
 
-/** Owner-only (middleware). Drafts (or redrafts) the follow-up email from the transcript and card activity. */
+/** Owner-only. Drafts (or redrafts) the follow-up email from the transcript and card activity. */
 export async function POST(req: NextRequest, { params }: RouteContext) {
   try {
-    const convo = await getConversation(params.id);
-    const profile = convo && getProfile(convo.slug);
-    if (!convo || !profile) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
+    const owned = await getOwnedConversation(params.id);
+    if (!owned) return NextResponse.json({ success: false, error: "Conversation not found" }, { status: 404 });
+    const { convo, owner: profile } = owned;
 
-    const events = (await listEvents()).filter((e) => e.conversationId === convo.id);
+    const events = eventsForConversation(await listEvents(convo.slug), convo);
     const cardUrl = `${req.nextUrl.origin}/c/${profile.slug}`;
     const { followUp, recruiter } = await draftFollowUp({ profile, conversation: convo, sessions: summarizeSessions(events), cardUrl });
 

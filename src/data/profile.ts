@@ -1,6 +1,6 @@
 import type { Profile } from "@/lib/types";
 
-/** Everything the card and portfolio show. Edit this file to update your card. */
+/** Sample profile, hand-written. Users build their own through onboarding (stored in .data/profiles.json). */
 export const kaushik: Profile = {
   slug: "kaushik",
   firstName: "Kaushik",
@@ -8,6 +8,7 @@ export const kaushik: Profile = {
   fullName: "Krishna Kaushik Burra",
   location: "Columbus, OH",
   title: "Biomedical Engineering Student",
+  headline: "Biomedical Engineering + Business @ Ohio State University",
   focus: "MedTech Software · AI and Business",
   bio: "I'm an aspiring biomedical engineer who specializes in MedTech software and building with AI. I want to build a career in product development, turning what clinicians and patients actually need into technology they can rely on.",
   tagline: "Let's build better healthcare together.",
@@ -55,6 +56,7 @@ export const kaushik: Profile = {
       feature: true,
       label: "Industry · AI/ML Software Engineering",
       title: "Agentic AI Sales Platform",
+      blurb: "AI sales agent that finds parts and places orders by chat, voice, or PDF.",
       where: "Winsupply · Capstone project, now part-time",
       org: { name: "Winsupply", place: "Dayton, Ohio" },
       summary: [
@@ -72,6 +74,7 @@ export const kaushik: Profile = {
       id: "epicyouth",
       label: "Client project",
       title: "EpicYouth OS",
+      blurb: "Grant tracking, CRM, and AI autofill for a Columbus nonprofit.",
       where: "Freelance full-stack · EpicYouth Columbus",
       org: { name: "Epic", accent: "Youth", place: "Columbus" },
       summary: [
@@ -87,6 +90,7 @@ export const kaushik: Profile = {
       id: "brain-tumor",
       label: "Research",
       title: "Brain Tumor Classification",
+      blurb: "Seven CNNs classifying brain tumors from MRI, 87% accuracy.",
       where: "AI Research Assistant · Dr. Simeng Zhu's lab",
       org: { name: "Wexner", place: "Medical Center" },
       summary: [
@@ -103,6 +107,7 @@ export const kaushik: Profile = {
       id: "adapt",
       label: "Medical device · Team lead",
       title: "ADAPT",
+      blurb: "Orthosis testing rig for Nationwide Children's gait clinicians.",
       where: "Software Team Lead · Biomedical Engineering Society",
       image: {
         src: "/adapt.jpg",
@@ -119,6 +124,7 @@ export const kaushik: Profile = {
       id: "mira",
       label: "Personal product",
       title: "MIRA AI",
+      blurb: "Turns photos of your closet into outfits for any occasion.",
       where: "AI wardrobe app",
       summary: [
         "Photograph your clothes and yourself, and MIRA mixes and matches them into outfits for any occasion, then saves your favorites. I built it for my sister, who was the first user.",
@@ -130,6 +136,7 @@ export const kaushik: Profile = {
       status: "Current project · Prototype",
       label: "Current project",
       title: "Dance Analysis Engine",
+      blurb: "Computer vision that flags out-of-sync dancers and plans formations.",
       where: "For the OSU Origins Dance team",
       image: {
         src: "/dance.jpg",
@@ -147,6 +154,7 @@ export const kaushik: Profile = {
       status: "Current project",
       label: "Current project",
       title: "behavioral-os",
+      blurb: "Learns your usage loops and steps in before they repeat.",
       where: "Web engine + native iOS app",
       summary: ["Learns your own usage patterns and steps in when it sees a known loop repeating."],
       tags: ["TypeScript", "iOS"],
@@ -159,6 +167,7 @@ export const kaushik: Profile = {
         when: "May 2026 – Present",
         title: "AI/ML Software Engineering Intern → Part-time",
         org: "Winsupply · Dayton, OH",
+        mark: "W",
         context:
           "Winsupply is one of Dayton's largest private companies. It supports a nationwide network of locally owned wholesale distribution companies that supply plumbing, HVAC, electrical, and industrial products.",
         bullets: [
@@ -171,18 +180,21 @@ export const kaushik: Profile = {
         when: "Mar 2026 – Present",
         title: "Freelance Full-Stack Developer",
         org: "Nonprofits & small businesses",
+        mark: "{ }",
         bullets: ["Built EpicYouth OS, cutting manual data entry 50% for 25 users.", "Built MIRA AI, Dance Tracker, and Pramajna."],
       },
       {
         when: "Sep 2025 – Sep 2026",
         title: "AI Research Assistant",
         org: "Dr. Simeng Zhu's lab · OSU Wexner Medical Center",
+        logo: "/osu-logo.svg",
         bullets: ["CNN brain tumor classification on BraTS, 87% accuracy, on the Ohio Supercomputer Center."],
       },
       {
         when: "Aug 2024 – Mar 2025",
         title: "Biomedical Research Intern",
         org: "Dr. Anil Jegga's lab · Cincinnati Children's Hospital",
+        mark: "CC",
         bullets: ["Computational drug–gene interaction analysis for pancreatitis."],
       },
     ],
@@ -191,6 +203,7 @@ export const kaushik: Profile = {
         when: "Sep 2025 – Present",
         title: "Software Team Lead, ADAPT",
         org: "Biomedical Engineering Society",
+        logo: "/osu-logo.svg",
         bullets: [
           "Lead software development for an orthosis testing device used by clinicians at Nationwide Children's Hospital.",
           "Built the Python GUI for real-time data visualization and export.",
@@ -202,12 +215,13 @@ export const kaushik: Profile = {
         when: "Aug 2025 – Present",
         title: "Product Development Consultant",
         org: "Big Data & Analytics Association",
+        logo: "/osu-logo.svg",
         bullets: [
           "Turn OSU Libraries stakeholders' problems into product requirements for a 10-person team.",
           "Run agile delivery with weekly deliverables, stand-ups, and demos.",
         ],
       },
-      { when: "Member", title: "OSU Origins Dance Team", org: "Competitive dance", bullets: [], badge: "1st place at nationals" },
+      { when: "Member", title: "OSU Origins Dance Team", org: "Competitive dance", logo: "/osu-logo.svg", bullets: [], badge: "1st place at nationals" },
     ],
   },
   skills: [
@@ -222,10 +236,3 @@ export const kaushik: Profile = {
   resume: { pdf: "/resume.pdf", image: "/resume-page.jpg" },
 };
 
-const profiles: Record<string, Profile> = { [kaushik.slug]: kaushik };
-
-export function getProfile(slug: string): Profile | undefined {
-  return profiles[slug];
-}
-
-export const ownerProfile = kaushik;
